@@ -141,7 +141,7 @@ Implement the core UserVault contract that extends ERC-4626 standard. This contr
 
 ### Issue #4: VaultFactory Contract — User Registration
 
-**Status:** ❌ PENDING  
+**Status:** ✅ COMPLETED  
 
 **Labels:** `smart-contracts`, `feature`, `factory`  
 
@@ -153,31 +153,34 @@ Implement user registration functionality in VaultFactory contract. Users must r
 
 **Acceptance Criteria:**
 
-- [ ] Create `contracts/VaultFactory.sol` (or add to existing)
-- [ ] User registration:
-  - [ ] `registerUser(string username, string bio)` function
-  - [ ] Username validation (max 20 characters)
-  - [ ] Bio validation (max 30 characters)
-  - [ ] Prevent duplicate registration
-  - [ ] Store registration timestamp
-- [ ] Storage structure:
-  - [ ] `mapping(address => bool) registeredUsers`
-  - [ ] `mapping(address => string) userUsernames`
-  - [ ] `mapping(address => string) userBios`
-  - [ ] `mapping(address => uint256) userRegistrationTimestamps`
-- [ ] View functions:
-  - [ ] `isUserRegistered(address user) returns (bool)`
-  - [ ] `getUserInfo(address user) returns (string, string, uint256)`
-- [ ] Event: `UserRegistered(address indexed user, uint256 timestamp)`
-- [ ] Input validation and error messages
-- [ ] Gas optimization considerations
+- [x] Create `contracts/VaultFactory.sol` (or add to existing)
+- [x] User registration:
+  - [x] `registerUser(string username, string bio)` function
+  - [x] Username validation (max 20 characters)
+  - [x] Bio validation (max 30 characters)
+  - [x] Prevent duplicate registration
+  - [x] Store registration timestamp
+- [x] Storage structure:
+  - [x] `mapping(address => bool) registeredUsers`
+  - [x] `mapping(address => string) userUsernames`
+  - [x] `mapping(address => string) userBios`
+  - [x] `mapping(address => uint256) userRegistrationTimestamps`
+- [x] View functions:
+  - [x] `isUserRegistered(address user) returns (bool)`
+  - [x] `getUserInfo(address user) returns (string, string, uint256)`
+- [x] Event: `UserRegistered(address indexed user, uint256 timestamp)`
+- [x] Input validation and error messages
+- [x] Gas optimization considerations
 
 **Implementation Notes:**
 
-- Consider storing strings as bytes32 hashes for gas optimization
-- Or store strings directly if gas is not a primary concern
-- Add proper require statements with clear error messages
-- Consider using custom errors for gas efficiency
+- Used custom errors for gas optimization
+- Stored strings directly for better UX
+- Added comprehensive validation
+- Used calldata for function parameters
+- Comprehensive test suite with 50+ test cases
+
+**Completed:** All acceptance criteria met. VaultFactory contract created with user registration functionality, validation, custom errors, view functions, and comprehensive testing.
 
 ---
 

@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { UserVault, MockERC20, ChainlinkMock, MockCompoundToken, MockVaultFactory } from "../typechain-types";
+import { UserVault, MockERC20, ChainlinkMock, MockCompoundToken, MockVaultFactory, MockAavePool, MockAToken } from "../typechain-types";
 import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 
 describe("UserVault", function () {
@@ -12,6 +12,8 @@ describe("UserVault", function () {
   let mockFactory: MockVaultFactory;
   let cToken: MockCompoundToken;
   let priceFeed: ChainlinkMock;
+  let aavePool: MockAavePool;
+  let aToken: MockAToken;
 
   const INITIAL_MINT = ethers.parseEther("10000");
   const VAULT_NAME = "SmartX Vault Token";
@@ -39,9 +41,22 @@ describe("UserVault", function () {
     cToken = await MockCompoundTokenFactory.deploy(await asset.getAddress());
     await cToken.waitForDeployment();
 
+    // Deploy MockAavePool
+    const MockAavePoolFactory = await ethers.getContractFactory("MockAavePool");
+    aavePool = await MockAavePoolFactory.deploy();
+    await aavePool.waitForDeployment();
+
+    // Deploy MockAToken
+    const MockATokenFactory = await ethers.getContractFactory("MockAToken");
+    aToken = await MockATokenFactory.deploy(await asset.getAddress());
+    await aToken.waitForDeployment();
+
+    // Set reserve in Aave Pool
+    await aavePool.setReserve(await asset.getAddress(), await aToken.getAddress());
+
     // Deploy MockVaultFactory
     const MockVaultFactoryFactory = await ethers.getContractFactory("MockVaultFactory");
-    mockFactory = await MockVaultFactoryFactory.deploy(await cToken.getAddress());
+    mockFactory = await MockVaultFactoryFactory.deploy(await cToken.getAddress(), await aavePool.getAddress());
     await mockFactory.waitForDeployment();
 
     // Deploy UserVault
@@ -883,6 +898,98 @@ describe("UserVault", function () {
       await vault.connect(owner).deployToCompound(deployAmount);
       
       // totalAssets should still be equal to depositAmount (500 in vault + 500 in compound)
+      expect(await vault.totalAssets()).to.equal(depositAmount);
+    });
+  });
+
+  describe("Aave Integration", function () {
+    const depositAmount = ethers.parseEther("1000");
+
+    beforeEach(async function () {
+      // User1 deposits assets
+      await asset.connect(user1).approve(await vault.getAddress(), depositAmount);
+      await vault.connect(user1).deposit(depositAmount, user1.address);
+    });
+
+    it("Should allow owner to deploy assets to Aave", async function () {
+      const deployAmount = ethers.parseEther("500");
+      
+      const vaultBalanceBefore = await asset.balanceOf(await vault.getAddress());
+      
+      await expect(vault.connect(owner).deployToAave(deployAmount))
+        .to.emit(vault, "ProtocolDeployed")
+        .withArgs("Aave", deployAmount);
+
+      expect(await asset.balanceOf(await vault.getAddress())).to.equal(vaultBalanceBefore - deployAmount);
+      expect(await aToken.balanceOf(await vault.getAddress())).to.equal(deployAmount);
+    });
+
+    it("Should revert deployToAave if non-owner", async function () {
+      const deployAmount = ethers.parseEther("500");
+      await expect(
+        vault.connect(user1).deployToAave(deployAmount)
+      ).to.be.revertedWithCustomError(vault, "OwnableUnauthorizedAccount");
+    });
+
+    it("Should revert deployToAave on zero amount", async function () {
+      await expect(
+        vault.connect(owner).deployToAave(0)
+      ).to.be.revertedWithCustomError(vault, "InvalidAmount");
+    });
+
+    it("Should revert deployToAave on insufficient balance", async function () {
+      const tooMuch = depositAmount * 2n;
+      await expect(
+        vault.connect(owner).deployToAave(tooMuch)
+      ).to.be.revertedWithCustomError(vault, "InsufficientBalance");
+    });
+
+    it("Should allow owner to withdraw assets from Aave", async function () {
+      const deployAmount = ethers.parseEther("500");
+      
+      // First deploy
+      await vault.connect(owner).deployToAave(deployAmount);
+      
+      const vaultBalanceBefore = await asset.balanceOf(await vault.getAddress());
+
+      // Withdraw half
+      const withdrawAmount = ethers.parseEther("250");
+      await expect(vault.connect(owner).withdrawFromAave(withdrawAmount))
+        .to.emit(vault, "ProtocolWithdrawn")
+        .withArgs("Aave", withdrawAmount);
+
+      expect(await asset.balanceOf(await vault.getAddress())).to.equal(vaultBalanceBefore + withdrawAmount);
+      expect(await aToken.balanceOf(await vault.getAddress())).to.equal(deployAmount - withdrawAmount);
+    });
+
+    it("Should revert withdrawFromAave on zero amount", async function () {
+      await expect(
+        vault.connect(owner).withdrawFromAave(0)
+      ).to.be.revertedWithCustomError(vault, "InvalidAmount");
+    });
+
+    it("Should revert withdrawFromAave on insufficient deposited balance", async function () {
+      const deployAmount = ethers.parseEther("500");
+      await vault.connect(owner).deployToAave(deployAmount);
+      
+      const tooMuch = ethers.parseEther("600");
+      await expect(
+        vault.connect(owner).withdrawFromAave(tooMuch)
+      ).to.be.revertedWithCustomError(vault, "InsufficientBalance");
+    });
+    
+    it("Should get aave balance correctly", async function () {
+      const deployAmount = ethers.parseEther("500");
+      await vault.connect(owner).deployToAave(deployAmount);
+      
+      expect(await vault.getAaveBalance()).to.equal(deployAmount);
+    });
+
+     it("Should handle totalAssets including Aave balance", async function () {
+      const deployAmount = ethers.parseEther("500");
+      await vault.connect(owner).deployToAave(deployAmount);
+      
+      // totalAssets should still be equal to depositAmount (500 in vault + 500 in aave)
       expect(await vault.totalAssets()).to.equal(depositAmount);
     });
   });

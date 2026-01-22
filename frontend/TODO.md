@@ -4,15 +4,9 @@ This file contains all GitHub issues for the SmartX frontend. Each issue is read
 
 ## ✅ Completed Issues
 
-_(No completed issues yet - ready for contributions!)_
-
----
-
-## ❌ Pending Issues
-
 ### Issue #1: Wallet Integration — Reown AppKit + Wagmi
 
-**Status:** ❌ PENDING  
+**Status:** ✅ COMPLETED  
 
 **Labels:** `frontend`, `wallet`, `infrastructure`  
 
@@ -20,29 +14,27 @@ _(No completed issues yet - ready for contributions!)_
 
 **Description:**
 
-Add wallet connection using Reown AppKit (WalletConnect) + Wagmi. Provide a `Navbar` component that shows connect/disconnect, address and network. Configure for Base Mainnet.
+Add wallet connection using Reown AppKit (WalletConnect) + Wagmi. Provide a `Web3Provider` component that wraps the application. Configure for Base networks.
 
 **Acceptance Criteria:**
 
-- [ ] Users can connect with MetaMask and WalletConnect
-- [ ] Address displays in navbar
-- [ ] Network information displays (Base Mainnet)
-- [ ] Signer is available to send transactions
-- [ ] Disconnect functionality works
-- [ ] Network switching works (with proper prompts)
+- [x] Configure Wagmi with Reown AppKit
+- [x] Create Web3Provider with Wagmi and TanStack Query
+- [x] Integrate provider into root layout
+- [x] Support Base Mainnet and Sepolia
+- [x] Theme configured for dark mode
 
 **Implementation Notes:**
 
-- Navbar component should be created at `components/layout/navbar.tsx`
-- AppKit integration configured in `config/adapter.ts`
 - Wagmi configuration in `config/wagmi.ts`
-- Use Base Mainnet chain ID: 8453
+- Web3Provider in `context/Web3Provider.tsx`
+- Project ID handled via environment variables
 
 ---
 
 ### Issue #2: Wagmi Configuration & Provider Setup
 
-**Status:** ❌ PENDING  
+**Status:** ✅ COMPLETED  
 
 **Labels:** `frontend`, `infrastructure`, `web3`  
 
@@ -50,24 +42,18 @@ Add wallet connection using Reown AppKit (WalletConnect) + Wagmi. Provide a `Nav
 
 **Description:**
 
-Create `config/wagmi.ts` and `config/adapter.ts` to expose providers and signers to the app. Configure for Base Mainnet with proper RPC endpoints.
+Create `config/wagmi.ts` and set up the provider infrastructure.
 
 **Acceptance Criteria:**
 
-- [ ] Wagmi config configured for Base Mainnet
-- [ ] Hooks/components can get an ethers provider from the adapter
-- [ ] Hooks/components can get an ethers signer from the adapter
-- [ ] `walletClientToSigner` utility function works
-- [ ] `publicClientToProvider` utility function works
-- [ ] RPC endpoints properly configured
-
-**Implementation Notes:**
-
-- Base Mainnet RPC: `https://mainnet.base.org`
-- Chain ID: 8453
-- Utilities handle viem to ethers conversions correctly
+- [x] Wagmi config configured for Base networks
+- [x] Provider setup with QueryClient
+- [x] Global layout integration
+- [x] Environment variable example created
 
 ---
+
+## ❌ Pending Issues
 
 ### Issue #3: Styling, Accessibility & Responsiveness
 

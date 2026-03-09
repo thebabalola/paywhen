@@ -47,12 +47,12 @@ Built for Ethereum-compatible chains, with primary deployment on Base Mainnet.
 
 ### Color Scheme
 
-The ForgeX frontend uses a sophisticated color palette featuring:
-- **Primary Colors:** Shades of red for primary actions and branding
-- **Neutral Colors:** Black, grey, and white for backgrounds, text, and UI elements
-- **Accent Colors:** Red variations for highlights and interactive elements
+The ForgeX frontend uses a high-contrast tri-tone color palette:
+- **Magenta**: `#FF007A` (Main brand color)
+- **Cyan-Blue**: `#0EA7CB` (Legacy identity / Secondary highlights)
+- **Electric Cyan**: `#00F0FF` (Neon accents & gradients)
 
-This color scheme creates a modern, professional, and visually appealing interface that reflects the platform's DeFi focus.
+This color scheme creates a vibrant, professional, and visually appealing interface that reflects the platform's advanced DeFi focus.
 
 ## Quick Start
 

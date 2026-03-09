@@ -745,33 +745,6 @@ Add comprehensive NatSpec documentation to all contracts, functions, and events.
 
 ---
 
-### Issue #18: Contract Documentation & NatSpec
-
-**Status:** ✅ COMPLETED
-
-**Labels:** `smart-contracts`, `documentation`
-
-**Priority:** MEDIUM
-
-**Description:**
-
-Add comprehensive NatSpec documentation to all contracts, functions, and events. Generate documentation from NatSpec.
-
-**Acceptance Criteria:**
-
-- [x] NatSpec documentation for all contracts, functions, events
-- [x] Use `@notice`, `@dev`, `@param`, `@return` tags
-- [ ] Generate documentation using solidity-docgen
-- [x] Architecture documentation (relationships, flow diagrams)
-
-**Implementation Notes:**
-
-- Follow Solidity NatSpec standard
-- Document edge cases and error conditions
-- Keep documentation up to date with code
-
----
-
 ## ❌ Pending Issues
 
 ### Issue #15: Deployment Scripts

@@ -56,8 +56,16 @@ ForgeX/
 ### Frontend
 - **Framework:** Next.js 14 (App Router)
 - **Language:** TypeScript
-- **Styling:** Tailwind CSS
+- **Styling:** Tailwind CSS (Tri-Tone Design System)
 - **Web3:** wagmi, viem, Reown AppKit
+
+## Design System
+
+ForgeX utilizes a vibrant, high-contrast tri-tone color scheme:
+
+- **Magenta (Primary)**: `#FF007A` — Main brand identity and primary action elements.
+- **Cyan-Blue (Secondary)**: `#0EA7CB` — AION Legacy color used for secondary navigation and branding.
+- **Electric Cyan (Accent)**: `#00F0FF` — Neon highlights, gradients, and interactive glow effects.
 
 ## Quick Start
 

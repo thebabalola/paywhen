@@ -4,14 +4,20 @@ This file contains all GitHub issues for the ForgeX frontend. Each issue is read
 
 ## ✅ Completed Issues
 
-### Issue #3: Styling, Accessibility & Responsiveness
+### Issue #3: Magenta Branding & Layout Refinement
 
 **Status:** ✅ COMPLETED  
 **Labels:** `frontend`, `ui/ux`, `design`  
 **Priority:** MEDIUM
-**Description:** Polish UI using Tailwind; ensure components are responsive and accessible. Implemented ForgeX red/black/white design system with dark mode.
+**Description:** Implement ForgeX Magenta/Black/White design system. Added custom Magenta theme, redesigned Hero section with circle collage and social proof, and unified dashboard navbar icons.
 
 ### Issue #1: Wallet Integration — Reown AppKit + Wagmi
+
+**Status:** ✅ COMPLETED  
+**Labels:** `frontend`, `feature`, `web3`  
+**Priority:** HIGH
+**Description:** Integrate Reown AppKit for seamless wallet connectivity on Base networks.
+**Completed:** wagmi Adapter configured with AppKit, supporting Base and Base Sepolia.
 
 ### Issue #12: Vault Performance Analytics
 

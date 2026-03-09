@@ -1,10 +1,10 @@
-# SmartX — Frontend
+# ForgeX — Frontend
 
-A modern Next.js frontend for SmartX - a decentralized vault platform enabling users to create multiple ERC-4626 compliant vaults for automated yield generation. Built with TypeScript, Tailwind CSS, and wagmi for Base Mainnet.
+A modern Next.js frontend for ForgeX - a decentralized vault platform enabling users to create multiple ERC-4626 compliant vaults for automated yield generation. Built with TypeScript, Tailwind CSS, and wagmi for Base Mainnet.
 
 ## Overview
 
-SmartX is a comprehensive DeFi platform that allows users to:
+ForgeX is a comprehensive DeFi platform that allows users to:
 
 - **Create Multiple Vaults**: Each user can create multiple personal ERC-4626 compliant vaults
 - **Automated Yield Generation**: Deploy assets to DeFi protocols (Aave, Compound, Uniswap) automatically
@@ -47,7 +47,7 @@ Built for Ethereum-compatible chains, with primary deployment on Base Mainnet.
 
 ### Color Scheme
 
-The SmartX frontend uses a sophisticated color palette featuring:
+The ForgeX frontend uses a sophisticated color palette featuring:
 - **Primary Colors:** Shades of red for primary actions and branding
 - **Neutral Colors:** Black, grey, and white for backgrounds, text, and UI elements
 - **Accent Colors:** Red variations for highlights and interactive elements
@@ -82,7 +82,7 @@ npm run build
 ## Project Structure
 
 ```
-smartx-frontend/
+forgex-frontend/
 ├── app/              # Next.js app router pages
 │   ├── vaults/      # Multi-vault management interface
 │   ├── create/      # Vault creation page

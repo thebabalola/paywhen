@@ -1,10 +1,10 @@
-# SmartX — Smart Contracts
+# ForgeX — Smart Contracts
 
-Solidity smart contracts for SmartX - a decentralized vault platform enabling users to create multiple ERC-4626 compliant vaults for automated yield generation. Deployed on Base Mainnet.
+Solidity smart contracts for ForgeX - a decentralized vault platform enabling users to create multiple ERC-4626 compliant vaults for automated yield generation. Deployed on Base Mainnet.
 
 ## Overview
 
-SmartX is a comprehensive DeFi platform that allows users to:
+ForgeX is a comprehensive DeFi platform that allows users to:
 
 - **Create Multiple Vaults**: Each user can create multiple personal ERC-4626 compliant vaults
 - **Automated Yield Generation**: Deploy assets to DeFi protocols (Aave, Compound, Uniswap) automatically
@@ -13,7 +13,7 @@ SmartX is a comprehensive DeFi platform that allows users to:
 - **Protocol Allocations**: Configure how assets are distributed across different DeFi protocols
 
 
-SmartX smart contracts implement:
+ForgeX smart contracts implement:
 
 ### VaultFactory Contract
 
@@ -61,7 +61,7 @@ npx hardhat run scripts/deploy.js --network base
 ## Project Structure
 
 ```
-smartx-smartcontracts/
+forgex-smartcontracts/
 ├── contracts/
 │   ├── VaultFactory.sol          # Factory contract for vault deployment
 │   ├── UserVault.sol             # ERC-4626 compliant vault contract
@@ -149,12 +149,11 @@ ETHERSCAN_API_KEY=your_etherscan_api_key
 
 ## Network Configuration
 
-### Base Sepolia Testnet
+### Base Mainnet
 
-- **Chain ID:** 84532
-- **RPC URL:** `https://sepolia.base.org`
-- **Explorer:** [Base Sepolia Explorer](https://sepolia.basescan.org/)
-- **Faucet:** [Base Sepolia Faucet](https://www.coinbase.com/faucets/base-ethereum-goerli-faucet)
+- **Chain ID:** 8453
+- **RPC URL:** `https://mainnet.base.org`
+- **Explorer:** [Base Mainnet Explorer](https://basescan.org/)
 
 ## Deployment
 

@@ -63,7 +63,23 @@ contract VultHook is BaseHook {
         BalanceDelta feesAccrued,
         bytes calldata hookData
     ) external override returns (bytes4, BalanceDelta) {
-        // Logic to deposit idle assets into ERC-4626 vault
+        address vault0 = assetToVault[key.currency0.tokenAddress()];
+        address vault1 = assetToVault[key.currency1.tokenAddress()];
+
+        // If vault exists for currency0, move assets
+        if (vault0 != address(0) && delta.amount0() > 0) {
+            uint256 amount = uint256(uint128(delta.amount0()));
+            IERC20(key.currency0.tokenAddress()).approve(vault0, amount);
+            IUserVault(vault0).deposit(amount, address(this));
+        }
+
+        // If vault exists for currency1, move assets
+        if (vault1 != address(0) && delta.amount1() > 0) {
+            uint256 amount = uint256(uint128(delta.amount1()));
+            IERC20(key.currency1.tokenAddress()).approve(vault1, amount);
+            IUserVault(vault1).deposit(amount, address(this));
+        }
+
         return (BaseHook.afterAddLiquidity.selector, delta);
     }
 

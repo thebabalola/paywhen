@@ -171,9 +171,26 @@ contract UserVault is ERC20, IERC4626, Ownable {
      * @inheritdoc IERC4626
      */
     function totalAssets() public view override returns (uint256) {
-        // Return vault balance + estimated Compound balance + estimated Aave balance
-        // Note: We use protocolDeposited as an estimate since real-time balance checks may not be view functions or may be gas intensive
+        // Return vault balance + tracked protocol deposits
+        // Note: For ERC-4626 view compatibility, we use the tracked deposits.
+        // Accrued interest is realized during harvest/rebalance by calling totalAssetsAccrued()
         return _asset.balanceOf(address(this)) + compoundDeposited + aaveDeposited;
+    }
+
+    /**
+     * @notice Returns the actual current total assets including accrued interest
+     * @dev This is a state-modifying function as it triggers interest accrual in Compound
+     * @return The absolute total assets including yield
+     */
+    function totalAssetsAccrued() public returns (uint256) {
+        uint256 compoundBalance = getCompoundBalance();
+        uint256 aaveBalance = getAaveBalance();
+        
+        // Sync the internal state to reflect reality
+        compoundDeposited = compoundBalance;
+        aaveDeposited = aaveBalance;
+        
+        return _asset.balanceOf(address(this)) + compoundBalance + aaveBalance;
     }
 
     /**

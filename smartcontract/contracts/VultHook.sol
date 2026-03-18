@@ -21,17 +21,49 @@ contract VultHook is BaseHook {
     using CurrencyLibrary for Currency;
 
     /*//////////////////////////////////////////////////////////////
+                              ERRORS
+    //////////////////////////////////////////////////////////////*/
+
+    error OnlyOwner();
+    error ZeroAddress();
+
+    /*//////////////////////////////////////////////////////////////
                             STATE VARIABLES
     //////////////////////////////////////////////////////////////*/
 
-    // Mapping of asset tokens to their corresponding ForgeX vaults
+    /// @notice Contract owner with admin privileges
+    address public owner;
+
+    /// @notice Mapping of asset tokens to their corresponding ForgeX vaults
     mapping(address => address) public assetToVault;
+
+    /// @notice Minimum yield threshold to trigger harvest (avoids dust donations)
+    uint256 public constant MIN_YIELD_THRESHOLD = 1000;
+
+    /*//////////////////////////////////////////////////////////////
+                              EVENTS
+    //////////////////////////////////////////////////////////////*/
+
+    event VaultSet(address indexed asset, address indexed vault);
+    event YieldHarvested(address indexed vault, uint256 amount);
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+
+    /*//////////////////////////////////////////////////////////////
+                             MODIFIERS
+    //////////////////////////////////////////////////////////////*/
+
+    modifier onlyOwner() {
+        if (msg.sender != owner) revert OnlyOwner();
+        _;
+    }
 
     /*//////////////////////////////////////////////////////////////
                              CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
 
-    constructor(IPoolManager _poolManager) BaseHook(_poolManager) {}
+    constructor(IPoolManager _poolManager) BaseHook(_poolManager) {
+        owner = msg.sender;
+    }
 
     /*//////////////////////////////////////////////////////////////
                              HOOK OVERRIDES
@@ -88,7 +120,9 @@ contract VultHook is BaseHook {
     }
 
     /**
-     * @dev Check interest/yield before a swap and harvest if profitable.
+     * @dev Before a swap, ensure the vault backing the output token has sufficient
+     *      liquidity. If a vault holds assets and the swap will drain the pool side,
+     *      withdraw from the vault to ensure the swap can complete.
      */
     function _beforeSwap(
         address sender,
@@ -96,7 +130,27 @@ contract VultHook is BaseHook {
         SwapParams calldata params,
         bytes calldata hookData
     ) internal override returns (bytes4, BeforeSwapDelta, uint24) {
-        // Logic to check vault yield could go here
+        // Determine which token the swapper is buying (output token)
+        // zeroForOne = true means swapping token0 for token1 (buying token1)
+        address outputToken = params.zeroForOne
+            ? Currency.unwrap(key.currency1)
+            : Currency.unwrap(key.currency0);
+
+        address vault = assetToVault[outputToken];
+
+        // If vault exists for the output token, withdraw some liquidity
+        // to ensure the pool has enough to satisfy the swap
+        if (vault != address(0)) {
+            uint256 vaultAssets = IUserVault(vault).totalAssets();
+            if (vaultAssets > MIN_YIELD_THRESHOLD) {
+                // Withdraw a portion to rebalance pool liquidity
+                uint256 withdrawAmount = vaultAssets / 10; // 10% rebalance
+                if (withdrawAmount > MIN_YIELD_THRESHOLD) {
+                    IUserVault(vault).withdraw(withdrawAmount, address(this), address(this));
+                }
+            }
+        }
+
         return (BaseHook.beforeSwap.selector, BeforeSwapDeltaLibrary.ZERO_DELTA, 0);
     }
 
@@ -116,22 +170,26 @@ contract VultHook is BaseHook {
         if (vault0 != address(0)) {
             uint256 currentAssets = IUserVault(vault0).totalAssets();
             uint256 accruedAssets = IUserVault(vault0).totalAssetsAccrued();
-            
-            if (accruedAssets > currentAssets) {
-                uint256 yield = accruedAssets - currentAssets;
-                IUserVault(vault0).withdraw(yield, address(this), address(this));
-                poolManager.donate(key, yield, 0, "");
+
+            if (accruedAssets > currentAssets + MIN_YIELD_THRESHOLD) {
+                uint256 yieldAmount = accruedAssets - currentAssets;
+                IUserVault(vault0).withdraw(yieldAmount, address(this), address(this));
+                IERC20(Currency.unwrap(key.currency0)).approve(address(poolManager), yieldAmount);
+                poolManager.donate(key, yieldAmount, 0, "");
+                emit YieldHarvested(vault0, yieldAmount);
             }
         }
 
         if (vault1 != address(0)) {
             uint256 currentAssets = IUserVault(vault1).totalAssets();
             uint256 accruedAssets = IUserVault(vault1).totalAssetsAccrued();
-            
-            if (accruedAssets > currentAssets) {
-                uint256 yield = accruedAssets - currentAssets;
-                IUserVault(vault1).withdraw(yield, address(this), address(this));
-                poolManager.donate(key, 0, yield, "");
+
+            if (accruedAssets > currentAssets + MIN_YIELD_THRESHOLD) {
+                uint256 yieldAmount = accruedAssets - currentAssets;
+                IUserVault(vault1).withdraw(yieldAmount, address(this), address(this));
+                IERC20(Currency.unwrap(key.currency1)).approve(address(poolManager), yieldAmount);
+                poolManager.donate(key, 0, yieldAmount, "");
+                emit YieldHarvested(vault1, yieldAmount);
             }
         }
 
@@ -148,7 +206,24 @@ contract VultHook is BaseHook {
      */
     function validateHookAddress(BaseHook _this) internal pure override {}
 
-    function setVaultForAsset(address asset, address vault) external {
+    /**
+     * @notice Set the ForgeX vault for a given asset token. Only callable by the owner.
+     * @param asset The ERC-20 token address
+     * @param vault The ForgeX UserVault address for that asset
+     */
+    function setVaultForAsset(address asset, address vault) external onlyOwner {
+        if (asset == address(0)) revert ZeroAddress();
         assetToVault[asset] = vault;
+        emit VaultSet(asset, vault);
+    }
+
+    /**
+     * @notice Transfer ownership of the hook contract.
+     * @param newOwner The new owner address
+     */
+    function transferOwnership(address newOwner) external onlyOwner {
+        if (newOwner == address(0)) revert ZeroAddress();
+        emit OwnershipTransferred(owner, newOwner);
+        owner = newOwner;
     }
 }

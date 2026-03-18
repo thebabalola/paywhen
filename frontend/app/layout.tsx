@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Web3Provider from "@/context/Web3Provider";
+import ClientLayout from "@/components/ClientLayout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SmartX | Decentralized Vault Protocol",
-  description: "Personalized ERC-4626 vaults for automated yield generation on Base.",
+  title: "ForgeX: Vult | Yield-Native Liquidity Hooks",
+  description: "AI-powered ERC-4626 vaults with Uniswap v4 yield hooks on Base. Stack vault interest and swap fees into a single automated strategy.",
 };
 
 export default function RootLayout({
@@ -29,7 +30,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Web3Provider>
-          {children}
+          <ClientLayout>
+            {children}
+          </ClientLayout>
         </Web3Provider>
       </body>
     </html>

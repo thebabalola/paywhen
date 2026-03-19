@@ -3,13 +3,22 @@
 import { useState } from "react";
 import { useAccount } from "wagmi";
 import { getDashboardInsights, getStrategyAdvice, getRiskAssessment } from "@/lib/ai";
+import { Cpu, TrendingUp, ShieldCheck, ChevronRight, Loader2 } from "lucide-react";
 
 type Tab = "insights" | "strategy" | "risk";
+
+const TABS: { key: Tab; label: string; icon: React.ElementType }[] = [
+  { key: "insights",  label: "Insights",  icon: TrendingUp },
+  { key: "strategy",  label: "Strategy",  icon: ChevronRight },
+  { key: "risk",      label: "Risk",      icon: ShieldCheck },
+];
+
+const RISK_PREFS = ["conservative", "balanced", "aggressive"] as const;
 
 export default function AIInsights() {
   const { address } = useAccount();
   const [activeTab, setActiveTab] = useState<Tab>("insights");
-  const [content, setContent] = useState<string>("");
+  const [content, setContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [riskPref, setRiskPref] = useState("balanced");
 
@@ -19,68 +28,90 @@ export default function AIInsights() {
     setContent("");
     try {
       let result: string;
-      switch (tab) {
-        case "insights":
-          result = await getDashboardInsights(address);
-          break;
-        case "strategy":
-          result = await getStrategyAdvice(address, riskPref);
-          break;
-        case "risk":
-          result = await getRiskAssessment(address);
-          break;
-      }
+      if (tab === "insights") result = await getDashboardInsights(address);
+      else if (tab === "strategy") result = await getStrategyAdvice(address, riskPref);
+      else result = await getRiskAssessment(address);
       setContent(result);
     } catch {
-      setContent("Unable to fetch AI analysis. Make sure the AI backend is running on localhost:8000.");
+      setContent("Unable to reach AI backend. Make sure it is running on localhost:8000.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const tabs: { key: Tab; label: string }[] = [
-    { key: "insights", label: "Insights" },
-    { key: "strategy", label: "Strategy" },
-    { key: "risk", label: "Risk" },
-  ];
-
   return (
-    <div className="rounded-3xl bg-white/5 border border-white/10 overflow-hidden">
-      <div className="p-4 border-b border-white/10 bg-gradient-to-r from-primary/10 to-accent/10">
-        <h3 className="font-black text-lg flex items-center gap-2">
-          <span className="w-6 h-6 rounded-md bg-gradient-to-r from-primary to-accent flex items-center justify-center text-xs font-black text-white">AI</span>
-          ForgeX Intelligence
-        </h3>
+    <div
+      style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, overflow: "hidden" }}
+    >
+      {/* Header */}
+      <div
+        style={{ padding: "16px 20px", borderBottom: "1px solid var(--border)", background: "var(--surface)" }}
+        className="flex items-center gap-3"
+      >
+        <div
+          style={{ background: "var(--primary-muted)", borderRadius: 10 }}
+          className="w-8 h-8 flex items-center justify-center shrink-0"
+        >
+          <Cpu size={15} style={{ color: "var(--primary)" }} />
+        </div>
+        <div>
+          <p style={{ color: "var(--foreground)", fontWeight: 800, fontSize: 15 }}>ForgeX Intelligence</p>
+          <p style={{ color: "var(--foreground-muted)", fontSize: 11 }}>AI-powered portfolio analysis</p>
+        </div>
       </div>
 
-      <div className="flex border-b border-white/10">
-        {tabs.map((tab) => (
+      {/* Tabs */}
+      <div style={{ borderBottom: "1px solid var(--border)", display: "flex" }}>
+        {TABS.map(({ key, label, icon: Icon }) => (
           <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key)}
-            className={`flex-1 py-3 text-sm font-bold transition-all ${
-              activeTab === tab.key
-                ? "text-primary border-b-2 border-primary"
-                : "text-gray-500 hover:text-gray-300"
-            }`}
+            key={key}
+            onClick={() => setActiveTab(key)}
+            style={{
+              flex: 1,
+              padding: "10px 0",
+              fontSize: 12,
+              fontWeight: 700,
+              letterSpacing: "0.02em",
+              transition: "all 150ms",
+              borderBottom: activeTab === key ? "2px solid var(--primary)" : "2px solid transparent",
+              color: activeTab === key ? "var(--primary)" : "var(--foreground-muted)",
+              background: "transparent",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 5,
+            }}
           >
-            {tab.label}
+            <Icon size={11} />
+            {label}
           </button>
         ))}
       </div>
 
-      <div className="p-5">
+      {/* Body */}
+      <div style={{ padding: 20 }}>
+
+        {/* Risk pref selector */}
         {activeTab === "strategy" && (
           <div className="flex gap-2 mb-4">
-            {["conservative", "balanced", "aggressive"].map((pref) => (
+            {RISK_PREFS.map((pref) => (
               <button
                 key={pref}
                 onClick={() => setRiskPref(pref)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold capitalize transition-all ${
-                  riskPref === pref
-                    ? "bg-primary/20 text-primary border border-primary/30"
-                    : "bg-white/5 text-gray-400 border border-white/10"
-                }`}
+                style={{
+                  flex: 1,
+                  padding: "5px 0",
+                  borderRadius: 8,
+                  fontSize: 11,
+                  fontWeight: 700,
+                  textTransform: "capitalize",
+                  cursor: "pointer",
+                  transition: "all 150ms",
+                  border: riskPref === pref ? "1px solid rgba(143,168,40,0.30)" : "1px solid var(--border)",
+                  background: riskPref === pref ? "var(--primary-muted)" : "transparent",
+                  color: riskPref === pref ? "var(--primary-hover)" : "var(--foreground-muted)",
+                }}
               >
                 {pref}
               </button>
@@ -88,23 +119,77 @@ export default function AIInsights() {
           </div>
         )}
 
+        {/* Generate button */}
         <button
           onClick={() => fetchData(activeTab)}
           disabled={isLoading || !address}
-          className="w-full py-3 mb-4 rounded-xl bg-gradient-to-r from-primary/20 to-secondary/20 border border-white/10 font-bold text-sm hover:from-primary/30 hover:to-secondary/30 transition-all disabled:opacity-50"
+          style={{
+            width: "100%",
+            padding: "10px 0",
+            borderRadius: 10,
+            marginBottom: 16,
+            fontSize: 13,
+            fontWeight: 700,
+            cursor: isLoading || !address ? "not-allowed" : "pointer",
+            opacity: isLoading || !address ? 0.5 : 1,
+            border: "1px solid var(--border-strong)",
+            background: "var(--surface)",
+            color: "var(--foreground)",
+            transition: "all 150ms",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 7,
+          }}
+          onMouseEnter={(e) => {
+            if (!isLoading && address) {
+              (e.target as HTMLElement).style.borderColor = "var(--primary-dark)";
+              (e.target as HTMLElement).style.color = "var(--primary-hover)";
+            }
+          }}
+          onMouseLeave={(e) => {
+            (e.target as HTMLElement).style.borderColor = "var(--border-strong)";
+            (e.target as HTMLElement).style.color = "var(--foreground)";
+          }}
         >
-          {isLoading ? "Analyzing..." : `Generate ${tabs.find((t) => t.key === activeTab)?.label}`}
+          {isLoading ? (
+            <><Loader2 size={13} className="animate-spin" /> Analyzing…</>
+          ) : (
+            <>
+              <Cpu size={13} />
+              Generate {TABS.find((t) => t.key === activeTab)?.label}
+            </>
+          )}
         </button>
 
-        {content && (
-          <div className="prose prose-invert prose-sm max-w-none">
-            <div className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">{content}</div>
+        {/* Content */}
+        {isLoading && (
+          <div className="space-y-2">
+            {[100, 85, 92, 70].map((w, i) => (
+              <div key={i} className="skeleton h-3" style={{ width: `${w}%` }} />
+            ))}
+          </div>
+        )}
+
+        {content && !isLoading && (
+          <div
+            style={{
+              fontSize: 13,
+              lineHeight: 1.65,
+              color: "var(--foreground-muted)",
+              maxHeight: 280,
+              overflowY: "auto",
+              whiteSpace: "pre-wrap",
+              padding: "2px 0",
+            }}
+          >
+            {content}
           </div>
         )}
 
         {!content && !isLoading && (
-          <p className="text-gray-500 text-sm text-center">
-            Click the button above to generate AI-powered analysis of your portfolio.
+          <p style={{ color: "var(--foreground-dim)", fontSize: 12, textAlign: "center", padding: "16px 0" }}>
+            Generate AI-powered analysis of your ForgeX portfolio.
           </p>
         )}
       </div>

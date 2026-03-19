@@ -2,10 +2,13 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { useAccount } from "wagmi";
 import { useIsRegistered } from "@/hooks/useVaultFactory";
-import { LayoutDashboard, Vault, Zap } from "lucide-react";
+import { LayoutDashboard, Vault } from "lucide-react";
+
+const LaunchButton = dynamic(() => import("./LaunchButton"), { ssr: false });
 
 const NAV_LINKS = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -17,6 +20,7 @@ export default function Navbar() {
   const { isConnected } = useAccount();
   const { data: isRegistered } = useIsRegistered();
   const showNav = isConnected && isRegistered;
+
 
   return (
     <header
@@ -70,36 +74,7 @@ export default function Navbar() {
 
         {/* Right: status dot + launch app + wallet button */}
         <div className="flex items-center gap-3">
-          {isConnected && (
-            <span className="hidden sm:flex items-center gap-1.5 text-xs font-semibold" style={{ color: "var(--primary)" }}>
-              <span
-                style={{ background: "var(--primary)" }}
-                className="w-1.5 h-1.5 rounded-full animate-pulse-olive"
-              />
-              Base
-            </span>
-          )}
-
-          {/* Launch App button */}
-          {isConnected ? (
-            <Link
-              href="/dashboard"
-              className="btn btn-primary text-xs px-4 py-2 hidden sm:flex items-center gap-1.5"
-            >
-              <Zap size={12} /> Launch App
-            </Link>
-          ) : (
-            <button
-              onClick={() => {
-                const cta = document.getElementById("connect-cta");
-                if (cta) cta.scrollIntoView({ behavior: "smooth", block: "center" });
-              }}
-              className="btn btn-outline text-xs px-4 py-2 hidden sm:flex items-center gap-1.5"
-            >
-              <Zap size={12} /> Launch App
-            </button>
-          )}
-
+          <LaunchButton />
           <appkit-button />
         </div>
       </div>

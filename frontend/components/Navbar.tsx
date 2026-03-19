@@ -75,7 +75,18 @@ export default function Navbar() {
         {/* Right: status dot + launch app + wallet button */}
         <div className="flex items-center gap-3">
           <LaunchButton />
-          <appkit-button />
+          {/* On landing page: show simple "Connected" pill when connected, full appkit-button otherwise */}
+          {/* On inner pages: always show full appkit-button for address/balance */}
+          {pathname === "/" && isConnected ? (
+            <span
+              style={{ background: "rgba(34,197,94,0.12)", border: "1px solid rgba(34,197,94,0.25)", color: "#22c55e" }}
+              className="px-3 py-1.5 rounded-lg text-xs font-bold"
+            >
+              Connected
+            </span>
+          ) : (
+            <appkit-button />
+          )}
         </div>
       </div>
 

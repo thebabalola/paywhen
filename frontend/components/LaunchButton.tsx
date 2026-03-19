@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { useAccount } from "wagmi";
-import { useAppKit } from "@reown/appkit/react";
+import { useToast } from "@/components/Toast";
 import { Zap } from "lucide-react";
 
 export default function LaunchButton() {
   const { isConnected } = useAccount();
-  const { open } = useAppKit();
+  const { showToast } = useToast();
 
   return (
     <div className="hidden sm:flex items-center gap-2.5">
@@ -40,7 +40,7 @@ export default function LaunchButton() {
         </Link>
       ) : (
         <button
-          onClick={() => open()}
+          onClick={() => showToast("Please connect your wallet to launch the app", "error")}
           className="btn btn-outline text-xs px-4 py-2 flex items-center gap-1.5"
         >
           <Zap size={12} /> Launch App

@@ -88,7 +88,7 @@ export default function Navbar() {
           {pathname === "/" && isConnected ? (
             <span
               style={{ background: "rgba(34,197,94,0.12)", border: "1px solid rgba(34,197,94,0.25)", color: "#22c55e" }}
-              className="px-3 py-1.5 rounded-lg text-xs font-bold"
+              className="px-4 py-2 rounded-lg text-xs font-bold"
             >
               Connected
             </span>

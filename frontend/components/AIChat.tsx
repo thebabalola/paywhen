@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useAccount } from "wagmi";
 import { chatWithAI } from "@/lib/ai";
+import { Bot, X, Send } from "lucide-react";
 
 interface Message {
   role: "user" | "assistant";
@@ -53,14 +54,22 @@ export default function AIChat() {
       {/* Floating button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 left-6 z-[80] w-14 h-14 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center shadow-[0_0_30px_rgba(255,0,122,0.3)] hover:shadow-[0_0_40px_rgba(255,0,122,0.5)] transition-all"
+        style={{
+          background: isOpen ? "var(--card)" : "var(--primary)",
+          border: "1px solid var(--border)",
+          boxShadow: isOpen ? "none" : "0 0 24px rgba(143,168,40,0.35)",
+        }}
+        className="fixed bottom-6 right-6 z-[80] w-14 h-14 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-105"
       >
-        <span className="text-white font-black text-lg">{isOpen ? "X" : "AI"}</span>
+        {isOpen
+          ? <X size={20} style={{ color: "var(--foreground-muted)" }} />
+          : <Bot size={22} style={{ color: "#fff" }} />
+        }
       </button>
 
       {/* Chat panel */}
       {isOpen && (
-        <div className="fixed bottom-24 left-6 z-[80] w-96 h-[500px] rounded-3xl bg-background border border-white/10 shadow-2xl flex flex-col overflow-hidden">
+        <div className="fixed bottom-24 right-6 z-[80] w-96 h-[500px] rounded-3xl bg-background border border-white/10 shadow-2xl flex flex-col overflow-hidden">
           {/* Header */}
           <div className="p-4 border-b border-white/10 bg-gradient-to-r from-primary/10 to-secondary/10">
             <h3 className="font-black text-lg">ForgeX AI Assistant</h3>
@@ -119,9 +128,10 @@ export default function AIChat() {
               <button
                 onClick={sendMessage}
                 disabled={isLoading || !input.trim()}
-                className="px-4 py-3 rounded-xl bg-primary text-white font-bold text-sm disabled:opacity-50 hover:shadow-[0_0_15px_rgba(255,0,122,0.3)] transition-all"
+                style={{ background: "var(--primary)" }}
+                className="px-4 py-3 rounded-xl flex items-center justify-center disabled:opacity-50 transition-all hover:opacity-90"
               >
-                Send
+                <Send size={16} style={{ color: "#fff" }} />
               </button>
             </div>
           </div>

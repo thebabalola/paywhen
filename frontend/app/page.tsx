@@ -351,7 +351,9 @@ export default function Home() {
           <p style={{ color: "var(--foreground-muted)" }} className="text-base mb-8">
             Connect your wallet. Create a vault. Let VultHook handle the rest.
           </p>
-          <appkit-button />
+          <Link href="/dashboard" className="btn btn-primary text-sm inline-flex items-center gap-2">
+            <Zap size={14} /> Launch App
+          </Link>
         </motion.div>
       </section>
 

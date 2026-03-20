@@ -22,15 +22,9 @@ export default function SecurityNotice() {
         style={{ color: "#B8891A", flexShrink: 0, marginTop: 2 }}
       />
       <div className="flex-1 min-w-0">
-        <p
-          style={{ color: "#B8891A", fontWeight: 800, fontSize: 13, marginBottom: 3 }}
-        >
-          Unaudited Contracts — Use at Your Own Risk
-        </p>
         <p style={{ color: "var(--foreground-muted)", fontSize: 12, lineHeight: 1.6 }}>
-          ForgeX smart contracts are deployed on Base Mainnet and have not undergone a
-          formal third-party security audit. Only deposit funds you can afford to lose.
-          The protocol is provided as-is for research and hackathon demonstration purposes.
+          <span style={{ color: "#B8891A", fontWeight: 800 }}>Heads up — </span>
+          ForgeX is still under development and yet to be fully audited. Please don&apos;t deposit real funds just yet.
         </p>
       </div>
       <button

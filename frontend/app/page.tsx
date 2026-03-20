@@ -231,12 +231,14 @@ export default function Home() {
       </section>
 
       {/* ── Features ── */}
-      <section id="how-it-works" className="max-w-7xl mx-auto px-5 py-24">
+      <section id="how-it-works" className="max-w-7xl mx-auto px-5 py-28">
+        {/* Section header — scroll reveal */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-12"
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.55 }}
+          className="mb-14"
         >
           <span className="label block mb-3">How it works</span>
           <h2 style={{ color: "var(--foreground)", letterSpacing: "-0.03em" }} className="text-4xl font-black">
@@ -244,45 +246,87 @@ export default function Home() {
           </h2>
         </motion.div>
 
-        <motion.div
-          variants={stagger}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-5"
-        >
-          {FEATURES.map(({ icon: Icon, title, desc, tag }) => (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {FEATURES.map(({ icon: Icon, title, desc, tag }, i) => (
             <motion.div
               key={title}
-              variants={item}
-              style={{ background: "var(--card)", border: "1px solid var(--border)" }}
-              className="rounded-2xl p-6 hover:border-[var(--border-strong)] transition-all duration-200 group"
+              initial={{ opacity: 0, y: 36 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: 0.5, delay: i * 0.12 }}
+              whileHover={{ y: -6, transition: { duration: 0.22, ease: "easeOut" } }}
+              style={{
+                background: "var(--card)",
+                border: "1px solid var(--border)",
+                position: "relative",
+                overflow: "hidden",
+              }}
+              className="rounded-2xl p-6 group cursor-default"
             >
-              <div className="flex items-start justify-between mb-4">
-                <div
-                  style={{ background: "var(--primary-muted)", borderRadius: 10 }}
-                  className="w-10 h-10 flex items-center justify-center"
-                >
-                  <Icon size={18} style={{ color: "var(--primary)" }} />
-                </div>
-                <span className="pill pill-accent text-[10px]">{tag}</span>
+              {/* Top glow bar — slides in on hover */}
+              <motion.div
+                initial={{ scaleX: 0, opacity: 0 }}
+                whileHover={{ scaleX: 1, opacity: 1 }}
+                transition={{ duration: 0.25 }}
+                style={{
+                  position: "absolute",
+                  top: 0, left: 0, right: 0,
+                  height: 2,
+                  background: "linear-gradient(90deg, transparent, var(--primary), transparent)",
+                  transformOrigin: "left",
+                }}
+              />
+
+              {/* Step number */}
+              <div
+                style={{
+                  position: "absolute",
+                  top: 18, right: 18,
+                  color: "var(--border)",
+                  fontWeight: 900,
+                  fontSize: 36,
+                  lineHeight: 1,
+                  letterSpacing: "-0.04em",
+                  userSelect: "none",
+                  transition: "color 0.2s",
+                }}
+                className="group-hover:text-[var(--primary-muted)]"
+              >
+                0{i + 1}
               </div>
+
+              {/* Icon */}
+              <div
+                style={{ background: "var(--primary-muted)", borderRadius: 10 }}
+                className="w-10 h-10 flex items-center justify-center mb-5"
+              >
+                <Icon size={18} style={{ color: "var(--primary)" }} />
+              </div>
+
+              {/* Tag */}
+              <span className="pill pill-accent text-[10px] mb-3 inline-block">{tag}</span>
+
               <h3
                 style={{ color: "var(--foreground)", fontWeight: 800, fontSize: 17, letterSpacing: "-0.02em" }}
                 className="mb-2"
               >
                 {title}
               </h3>
-              <p style={{ color: "var(--foreground-muted)", fontSize: 14, lineHeight: 1.6 }}>{desc}</p>
-              <div
+              <p style={{ color: "var(--foreground-muted)", fontSize: 14, lineHeight: 1.65 }}>{desc}</p>
+
+              {/* Learn more — slides up on hover */}
+              <motion.div
+                initial={{ opacity: 0, y: 6 }}
+                whileHover={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.18 }}
                 style={{ color: "var(--primary)", fontSize: 12, fontWeight: 700 }}
-                className="mt-5 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="mt-5 flex items-center gap-1"
               >
                 Learn more <ArrowRight size={11} />
-              </div>
+              </motion.div>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
       </section>
 
       {/* ── CTA strip ── */}
@@ -291,9 +335,10 @@ export default function Home() {
         className="py-20 px-5"
       >
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 28 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.55 }}
           className="max-w-2xl mx-auto text-center"
         >
           <Image src="/forgex-logo.png" alt="ForgeX" width={48} height={48} className="mx-auto mb-5" />

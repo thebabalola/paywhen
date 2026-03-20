@@ -1,7 +1,13 @@
-# Hardhat files
+# Hardhat build outputs
 cache/
 artifacts/
 typechain-types/
+deployments/
+
+# Foundry build outputs & deps
+out/
+lib/
+broadcast/
 
 # Node
 node_modules/

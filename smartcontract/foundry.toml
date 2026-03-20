@@ -1,0 +1,13 @@
+[profile.default]
+src = "contracts/vult"
+test = "test/foundry"
+out = "out"
+libs = ["lib"]
+remappings = [
+    "@uniswap/v4-core/=lib/@uniswap/v4-core/",
+    "@uniswap/v4-periphery/=lib/@uniswap/v4-periphery/",
+    "@openzeppelin/contracts/=lib/@openzeppelin/contracts/",
+    "@chainlink/contracts/=lib/@chainlink/contracts/",
+    "forge-std/=lib/forge-std/src/",
+    "interfaces/=$(pwd)/contracts/interfaces/"
+]

@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { Layers, Zap, Cpu, ArrowRight, GitBranch, CircleDot } from "lucide-react";
+import { Layers, Zap, Cpu, ArrowRight, GitBranch } from "lucide-react";
 
 const FEATURES = [
   {
@@ -27,10 +27,9 @@ const FEATURES = [
 ];
 
 const STATS = [
-  { icon: CircleDot, value: "Live",  label: "Deployed on Base Mainnet",   accent: "#22c55e" },
-  { icon: Layers,    value: "ERC-4626", label: "Tokenized Vault Standard",  accent: "var(--primary)" },
-  { icon: GitBranch, value: "v4 Hook",  label: "Uniswap v4 Native",         accent: "var(--primary)" },
-  { icon: Zap,       value: "2× Yield", label: "Lending + Swap Fees",       accent: "var(--primary)" },
+  { icon: Layers,    value: "ERC-4626",  label: "Tokenized Vault Standard", accent: "var(--primary)" },
+  { icon: GitBranch, value: "v4 Hook",   label: "Uniswap v4 Native",        accent: "var(--primary)" },
+  { icon: Zap,       value: "2× Yield",  label: "Lending + Swap Fees",      accent: "var(--primary)" },
 ];
 
 const stagger = {
@@ -163,7 +162,7 @@ export default function Home() {
 
       {/* ── Stats strip ── */}
       <section style={{ background: "var(--surface)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}>
-        <div className="max-w-7xl mx-auto px-5 py-5 flex flex-col sm:flex-row items-stretch sm:items-center divide-y sm:divide-y-0 sm:divide-x"
+        <div className="max-w-5xl mx-auto px-10 py-5 flex flex-col sm:flex-row items-stretch sm:items-center divide-y sm:divide-y-0 sm:divide-x"
           style={{ "--tw-divide-color": "var(--border)" } as React.CSSProperties}
         >
           {STATS.map(({ icon: Icon, value, label, accent }, i) => (
@@ -305,7 +304,6 @@ export default function Home() {
           transition={{ duration: 0.55 }}
           className="max-w-2xl mx-auto text-center"
         >
-          <Image src="/forgex-logo.png" alt="ForgeX" width={48} height={48} className="mx-auto mb-5" />
           <h2
             style={{ color: "var(--foreground)", letterSpacing: "-0.04em" }}
             className="text-4xl font-black mb-4"

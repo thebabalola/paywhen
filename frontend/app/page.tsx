@@ -46,7 +46,7 @@ export default function Home() {
     <div className="min-h-screen overflow-x-hidden">
 
       {/* ── Hero ── */}
-      <section className="relative max-w-7xl mx-auto px-5 pt-36 pb-16 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center min-h-[85vh]">
+      <section className="relative max-w-7xl mx-auto px-5 pt-28 pb-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center min-h-[70vh]">
 
         {/* Left copy */}
         <motion.div

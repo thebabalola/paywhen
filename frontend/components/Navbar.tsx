@@ -39,7 +39,7 @@ export default function Navbar() {
         {/* Logo + Wordmark */}
         <Link href="/" className="flex items-center gap-3 shrink-0 group">
           <Image
-            src="/logo.svg"
+            src="/forgex-logo.png"
             alt="ForgeX logo"
             width={36}
             height={36}

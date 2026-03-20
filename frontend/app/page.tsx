@@ -1,7 +1,6 @@
 'use client'
 
 import { motion } from "framer-motion";
-import HeroIllustration from "@/components/HeroIllustration";
 import Link from "next/link";
 import Image from "next/image";
 import { Layers, Zap, Cpu, ArrowRight, GitBranch } from "lucide-react";
@@ -112,14 +111,83 @@ export default function Home() {
           </motion.div>
         </motion.div>
 
-        {/* Right illustration */}
+        {/* Right — hero image with floating labels */}
         <motion.div
           initial={{ opacity: 0, x: 30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className="hidden lg:block"
+          className="hidden lg:flex items-center justify-center relative"
+          style={{ minHeight: 420 }}
         >
-          <HeroIllustration />
+          {/* Central image */}
+          <div className="relative">
+            <Image
+              src="/hero-hook.png"
+              alt="VultHook"
+              width={340}
+              height={340}
+              className="rounded-3xl"
+              style={{ objectFit: "cover" }}
+              priority
+            />
+
+            {/* Floating label — top left: ERC-4626 */}
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              style={{
+                background: "var(--card)",
+                border: "1px solid var(--border)",
+                color: "var(--foreground-muted)",
+                position: "absolute",
+                top: -22,
+                left: -28,
+              }}
+              className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold shadow-lg backdrop-blur-sm"
+            >
+              <Layers size={13} style={{ color: "var(--primary)" }} />
+              ERC-4626 Vaults
+            </motion.div>
+
+            {/* Floating label — top right: Uniswap v4 Hooks */}
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.8 }}
+              style={{
+                background: "var(--card)",
+                border: "1px solid var(--border)",
+                color: "var(--foreground-muted)",
+                position: "absolute",
+                top: 40,
+                right: -44,
+              }}
+              className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold shadow-lg backdrop-blur-sm"
+            >
+              <GitBranch size={13} style={{ color: "var(--primary)" }} />
+              Uniswap v4 Hook
+            </motion.div>
+
+            {/* Floating label — bottom right: AI Analytics */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 1.0 }}
+              style={{
+                background: "var(--card)",
+                border: "1px solid var(--border)",
+                color: "var(--foreground-muted)",
+                position: "absolute",
+                bottom: -22,
+                right: -36,
+              }}
+              className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold shadow-lg backdrop-blur-sm"
+            >
+              <Cpu size={13} style={{ color: "var(--primary)" }} />
+              AI Analytics
+            </motion.div>
+          </div>
         </motion.div>
 
         {/* Subtle horizontal divider at bottom */}
@@ -217,7 +285,7 @@ export default function Home() {
           viewport={{ once: true }}
           className="max-w-2xl mx-auto text-center"
         >
-          <Image src="/logo.svg" alt="ForgeX" width={48} height={48} className="mx-auto mb-5" />
+          <Image src="/forgex-logo.png" alt="ForgeX" width={48} height={48} className="mx-auto mb-5" />
           <h2
             style={{ color: "var(--foreground)", letterSpacing: "-0.04em" }}
             className="text-4xl font-black mb-4"
@@ -238,7 +306,7 @@ export default function Home() {
       >
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <Image src="/logo.svg" alt="ForgeX" width={24} height={24} />
+            <Image src="/forgex-logo.png" alt="ForgeX" width={24} height={24} />
             <span style={{ color: "var(--foreground-dim)", fontSize: 12, letterSpacing: "0.06em", fontWeight: 700 }}>
               FORGEX : VULT
             </span>

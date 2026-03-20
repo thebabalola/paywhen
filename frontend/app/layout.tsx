@@ -15,18 +15,18 @@ export const metadata: Metadata = {
     title: "ForgeX: Vult — Yield-Native Liquidity Hooks",
     description: "Stack ERC-4626 vault yield with Uniswap v4 swap fees. AI-driven strategy optimization on Base.",
     siteName: "ForgeX: Vult",
-    images: [{ url: "/logo.svg", width: 44, height: 44, alt: "ForgeX Logo" }],
+    images: [{ url: "/forgex-logo.png", width: 44, height: 44, alt: "ForgeX Logo" }],
   },
   twitter: {
     card: "summary",
     title: "ForgeX: Vult",
     description: "Yield-Native Liquidity Hooks on Base. ERC-4626 + Uniswap v4 + AI.",
-    images: ["/logo.svg"],
+    images: ["/forgex-logo.png"],
   },
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
-    apple: "/logo.svg",
+    apple: "/forgex-logo.png",
   },
   robots: { index: true, follow: true },
 };

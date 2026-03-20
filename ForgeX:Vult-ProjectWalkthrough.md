@@ -194,7 +194,7 @@ The smart contract functions `deployToAave()` and `deployToCompound()` exist and
 1. ~~**Multi-asset support**~~ — **DONE.** USDC, DAI, USDT added alongside WETH in CreateVaultModal. Token addresses in `constants.ts`.
 2. ~~**Protocol deployment UI**~~ — **DONE.** VaultCard now has "Allocate" button with Deploy to Aave / Deploy to Compound / Withdraw from Aave / Withdraw from Compound. ABIs + hooks added.
 3. ~~**Dashboard user profile**~~ — **DONE.** Profile card at top of dashboard shows username, bio, member-since date fetched via `useUserInfo()`. Registration now inline in dashboard.
-4. **Vault analytics page** — Historical yield tracking, deposit/withdrawal history, performance charts
+4. ~~**Vault analytics page**~~ — **DONE.** `/analytics` page live with per-vault yield % accrued, USD value, protocol allocation bar (Aave/Compound/Idle), share price, and live on-chain data.
 5. ~~**AI backend deployment**~~ — **DONE.** Deployed to Render at `https://forgex-14vp.onrender.com`. `NEXT_PUBLIC_AI_BACKEND_URL` set in `.env.local` and Vercel env vars.
 
 ### Medium Priority

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useAccount } from "wagmi";
 import { getDashboardInsights, getStrategyAdvice, getRiskAssessment } from "@/lib/ai";
 import { Cpu, TrendingUp, ShieldCheck, ChevronRight, Loader2 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 type Tab = "insights" | "strategy" | "risk";
 
@@ -179,11 +180,21 @@ export default function AIInsights() {
               color: "var(--foreground-muted)",
               maxHeight: 280,
               overflowY: "auto",
-              whiteSpace: "pre-wrap",
               padding: "2px 0",
             }}
           >
-            {content}
+            <ReactMarkdown
+              components={{
+                p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                ul: ({ children }) => <ul className="list-disc pl-4 mb-2 space-y-1">{children}</ul>,
+                ol: ({ children }) => <ol className="list-decimal pl-4 mb-2 space-y-1">{children}</ol>,
+                li: ({ children }) => <li>{children}</li>,
+                strong: ({ children }) => <strong className="font-bold" style={{ color: "var(--foreground)" }}>{children}</strong>,
+                code: ({ children }) => <code className="px-1 py-0.5 rounded text-xs" style={{ background: "var(--surface)", fontFamily: "monospace" }}>{children}</code>,
+              }}
+            >
+              {content}
+            </ReactMarkdown>
           </div>
         )}
 

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useAccount } from "wagmi";
 import { chatWithAI } from "@/lib/ai";
 import { Bot, X, Send } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 interface Message {
   role: "user" | "assistant";
@@ -104,7 +105,18 @@ export default function AIChat() {
                     : "mr-auto bg-white/5 text-gray-200"
                 }`}
               >
-                <div className="whitespace-pre-wrap">{msg.content}</div>
+                <ReactMarkdown
+                  components={{
+                    p: ({ children }) => <p className="mb-1 last:mb-0">{children}</p>,
+                    ul: ({ children }) => <ul className="list-disc pl-4 mb-1 space-y-0.5">{children}</ul>,
+                    ol: ({ children }) => <ol className="list-decimal pl-4 mb-1 space-y-0.5">{children}</ol>,
+                    li: ({ children }) => <li>{children}</li>,
+                    strong: ({ children }) => <strong className="font-bold" style={{ color: "var(--foreground)" }}>{children}</strong>,
+                    code: ({ children }) => <code className="px-1 py-0.5 rounded text-xs" style={{ background: "rgba(255,255,255,0.08)", fontFamily: "monospace" }}>{children}</code>,
+                  }}
+                >
+                  {msg.content}
+                </ReactMarkdown>
               </div>
             ))}
             {isLoading && (

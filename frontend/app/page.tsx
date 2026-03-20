@@ -101,11 +101,8 @@ export default function Home() {
 
           {/* CTA */}
           <motion.div variants={item} className="flex flex-wrap gap-3">
-            <Link href="/dashboard" className="btn btn-primary text-sm flex items-center gap-2">
-              <Zap size={14} /> Launch App
-            </Link>
             <Link href="#how-it-works" className="btn btn-outline text-sm flex items-center gap-2">
-              How it works <ArrowRight size={13} />
+              How ForgeX Works <ArrowRight size={13} />
             </Link>
           </motion.div>
         </motion.div>

@@ -19,22 +19,24 @@ const RISK_PREFS = ["conservative", "balanced", "aggressive"] as const;
 export default function AIInsights() {
   const { address } = useAccount();
   const [activeTab, setActiveTab] = useState<Tab>("insights");
-  const [content, setContent] = useState("");
+  const [contents, setContents] = useState<Record<Tab, string>>({ insights: "", strategy: "", risk: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [riskPref, setRiskPref] = useState("balanced");
+
+  const content = contents[activeTab];
 
   const fetchData = async (tab: Tab) => {
     if (!address) return;
     setIsLoading(true);
-    setContent("");
+    setContents((prev) => ({ ...prev, [tab]: "" }));
     try {
       let result: string;
       if (tab === "insights") result = await getDashboardInsights(address);
       else if (tab === "strategy") result = await getStrategyAdvice(address, riskPref);
       else result = await getRiskAssessment(address);
-      setContent(result);
+      setContents((prev) => ({ ...prev, [tab]: result }));
     } catch {
-      setContent("Unable to reach AI backend. Make sure it is running on localhost:8000.");
+      setContents((prev) => ({ ...prev, [tab]: "Unable to reach AI backend. Make sure it is running on localhost:8000." }));
     } finally {
       setIsLoading(false);
     }

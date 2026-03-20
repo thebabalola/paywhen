@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
-/* ─── ForgeX Design Tokens ────────────────────────────────────── */
-:root {
+/* ─── ForgeX Design Tokens — Dark (default) ───────────────────── */
+:root,
+[data-theme="dark"] {
   --background:      #090A06;
   --surface:         #121407;
   --card:            #181B0C;
@@ -20,6 +21,28 @@
   --success:         #5A8A2A;
   --warning:         #B8891A;
   --error:           #8A3030;
+}
+
+/* ─── ForgeX Design Tokens — Light ───────────────────────────── */
+[data-theme="light"] {
+  --background:      #F5F4EE;
+  --surface:         #EDEBE0;
+  --card:            #E8E5D8;
+  --card-hover:      #E0DDD0;
+  --border:          #CCCAB8;
+  --border-strong:   #B4B19E;
+  --primary:         #6D8020;
+  --primary-hover:   #7A9024;
+  --primary-dark:    #4A5A14;
+  --primary-muted:   rgba(109,128,32,0.12);
+  --primary-glow:    rgba(109,128,32,0.20);
+  --foreground:      #1A1C10;
+  --foreground-muted:#5C5940;
+  --foreground-dim:  #9C9A88;
+  --accent:          #4A4428;
+  --success:         #3A6018;
+  --warning:         #8A5E10;
+  --error:           #6A2020;
 }
 
 @theme inline {
@@ -86,6 +109,10 @@ body {
 .btn-ghost { background: transparent; color: var(--foreground-muted); }
 .btn-ghost:hover { color: var(--foreground); background: var(--card); }
 
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(18px); }
   to   { opacity: 1; transform: translateY(0); }

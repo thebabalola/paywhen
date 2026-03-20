@@ -207,8 +207,8 @@ The smart contract functions `deployToAave()` and `deployToCompound()` exist and
 
 ### Nice to Have
 
-10. **Dark/Light theme toggle** — AION has it, ForgeX is dark-only
-11. **Transaction history** — On-chain event indexing for deposit/withdraw/yield events
-12. **Real-time yield tracking** — WebSocket or polling for live vault balance updates
-13. **Vault comparison tool** — Compare yields across different vault strategies
-14. **Governance/Multisig** — Admin operations currently single-owner; could add timelock/multisig
+10. ~~**Dark/Light theme toggle**~~ — **DONE.** `ThemeToggle` component (Sun/Moon icon) in Navbar. Toggles `data-theme="light"/"dark"` on `<html>`, persisted to `localStorage`. Full light palette added to globals.css.
+11. ~~**Transaction history**~~ — **DONE.** `/history` page fetches on-chain Deposit/Withdraw events via `usePublicClient` + viem `getLogs` across last 50k blocks for all user vaults. Unified chronological table with type badge, vault, assets, shares, block, basescan tx link.
+12. ~~**Real-time yield tracking**~~ — **DONE.** All reads in `useVaultData` poll every 30 seconds via `refetchInterval: 30_000`. No manual refresh needed.
+13. ~~**Vault comparison tool**~~ — **DONE.** `/compare` page shows all vaults side-by-side in a scrollable comparison grid. Fixed metric rows × vault columns: total assets, USD value, accrued, share price, Aave/Compound/idle allocation, yield %, status.
+14. ~~**Governance/Multisig**~~ — **DONE.** VaultCard reads `owner()` on-chain. If connected wallet is the vault owner, an **Admin** button appears → opens Transfer Ownership panel → calls `transferOwnership(newOwner)`. All 3 new routes added to Navbar.

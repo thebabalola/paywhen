@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { formatEther, parseEther } from "viem";
 import { useVaultData, useVaultDeposit, useVaultWithdraw, useDeployToAave, useDeployToCompound, useWithdrawFromAave, useWithdrawFromCompound, useTransferShares } from "@/hooks/useUserVault";
 import { useToast } from "./Toast";
+import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { USER_VAULT_ABI } from "@/lib/abis";
 
 interface VaultCardProps {
   vaultAddress: `0x${string}`;
@@ -11,6 +13,7 @@ interface VaultCardProps {
 }
 
 export default function VaultCard({ vaultAddress, index }: VaultCardProps) {
+  const { address: connectedAddress } = useAccount();
   const vault = useVaultData(vaultAddress);
   const deposit = useVaultDeposit(vaultAddress);
   const withdraw = useVaultWithdraw(vaultAddress);
@@ -21,6 +24,18 @@ export default function VaultCard({ vaultAddress, index }: VaultCardProps) {
   const shareTransfer = useTransferShares(vaultAddress);
   const { showToast } = useToast();
 
+  // Governance
+  const ownerRead = useReadContract({
+    address: vaultAddress,
+    abi: USER_VAULT_ABI,
+    functionName: "owner",
+    query: { enabled: !!vaultAddress },
+  });
+  const { writeContract: writeTransfer, data: transferHash, isPending: isTransferPending } = useWriteContract();
+  const { isLoading: isTransferConfirming, isSuccess: isTransferSuccess } = useWaitForTransactionReceipt({ hash: transferHash });
+  const vaultOwner = ownerRead.data as `0x${string}` | undefined;
+  const isOwner = !!(connectedAddress && vaultOwner && connectedAddress.toLowerCase() === vaultOwner.toLowerCase());
+
   const [depositAmount, setDepositAmount] = useState("");
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [showDeposit, setShowDeposit] = useState(false);
@@ -30,6 +45,8 @@ export default function VaultCard({ vaultAddress, index }: VaultCardProps) {
   const [showShare, setShowShare] = useState(false);
   const [shareRecipient, setShareRecipient] = useState("");
   const [shareAmount, setShareAmount] = useState("");
+  const [showGovernance, setShowGovernance] = useState(false);
+  const [newOwner, setNewOwner] = useState("");
   const [step, setStep] = useState<"idle" | "approving" | "depositing">("idle");
 
   // Handle deposit flow: approve then deposit
@@ -122,6 +139,15 @@ export default function VaultCard({ vaultAddress, index }: VaultCardProps) {
   useEffect(() => {
     if (shareTransfer.error) showToast(`Transfer failed: ${shareTransfer.error.message.slice(0, 80)}`, "error");
   }, [shareTransfer.error]);
+
+  useEffect(() => {
+    if (isTransferSuccess) {
+      showToast("Ownership transferred!", "success");
+      setNewOwner("");
+      setShowGovernance(false);
+      ownerRead.refetch();
+    }
+  }, [isTransferSuccess]);
 
   const handleDeposit = () => {
     if (!depositAmount || !vault.assetAddress) return;
@@ -321,31 +347,71 @@ export default function VaultCard({ vaultAddress, index }: VaultCardProps) {
         </div>
       )}
 
+      {/* Governance Section — only if caller is vault owner */}
+      {showGovernance && isOwner && (
+        <div className="mb-3 p-3 bg-black/30 rounded-xl space-y-2">
+          <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">Transfer Vault Ownership</div>
+          <div className="text-xs text-gray-500">
+            Current owner: <span className="font-mono text-gray-300">{vaultOwner?.slice(0, 8)}…{vaultOwner?.slice(-6)}</span>
+          </div>
+          <input
+            type="text"
+            placeholder="New owner address (0x…)"
+            value={newOwner}
+            onChange={(e) => setNewOwner(e.target.value)}
+            className="w-full p-3 rounded-lg bg-background border border-white/10 focus:border-primary outline-none text-sm font-mono"
+          />
+          <button
+            onClick={() => {
+              if (!newOwner) return;
+              writeTransfer({
+                address: vaultAddress,
+                abi: USER_VAULT_ABI,
+                functionName: "transferOwnership",
+                args: [newOwner as `0x${string}`],
+              });
+            }}
+            disabled={!newOwner || isTransferPending || isTransferConfirming}
+            className="w-full py-2 bg-red-500/20 border border-red-500/30 text-red-300 rounded-lg font-bold text-sm disabled:opacity-50 hover:bg-red-500/30 transition-colors"
+          >
+            {isTransferPending || isTransferConfirming ? "Transferring…" : "Confirm Transfer Ownership"}
+          </button>
+        </div>
+      )}
+
       <div className="flex gap-2 mt-4 flex-wrap">
         <button
-          onClick={() => { setShowDeposit(!showDeposit); setShowWithdraw(false); setShowAllocate(false); setShowShare(false); }}
+          onClick={() => { setShowDeposit(!showDeposit); setShowWithdraw(false); setShowAllocate(false); setShowShare(false); setShowGovernance(false); }}
           className="flex-1 py-3 bg-primary/10 border border-primary/20 rounded-xl font-bold text-primary hover:bg-primary/20 transition-all text-sm"
         >
           Deposit
         </button>
         <button
-          onClick={() => { setShowWithdraw(!showWithdraw); setShowDeposit(false); setShowAllocate(false); setShowShare(false); }}
+          onClick={() => { setShowWithdraw(!showWithdraw); setShowDeposit(false); setShowAllocate(false); setShowShare(false); setShowGovernance(false); }}
           className="flex-1 py-3 bg-secondary/10 border border-secondary/20 rounded-xl font-bold text-secondary hover:bg-secondary/20 transition-all text-sm"
         >
           Withdraw
         </button>
         <button
-          onClick={() => { setShowAllocate(!showAllocate); setShowDeposit(false); setShowWithdraw(false); setShowShare(false); }}
+          onClick={() => { setShowAllocate(!showAllocate); setShowDeposit(false); setShowWithdraw(false); setShowShare(false); setShowGovernance(false); }}
           className="flex-1 py-3 bg-blue-500/10 border border-blue-500/20 rounded-xl font-bold text-blue-400 hover:bg-blue-500/20 transition-all text-sm"
         >
           Allocate
         </button>
         <button
-          onClick={() => { setShowShare(!showShare); setShowDeposit(false); setShowWithdraw(false); setShowAllocate(false); }}
+          onClick={() => { setShowShare(!showShare); setShowDeposit(false); setShowWithdraw(false); setShowAllocate(false); setShowGovernance(false); }}
           className="flex-1 py-3 bg-orange-500/10 border border-orange-500/20 rounded-xl font-bold text-orange-400 hover:bg-orange-500/20 transition-all text-sm"
         >
           Share
         </button>
+        {isOwner && (
+          <button
+            onClick={() => { setShowGovernance(!showGovernance); setShowDeposit(false); setShowWithdraw(false); setShowAllocate(false); setShowShare(false); }}
+            className="flex-1 py-3 bg-red-500/10 border border-red-500/20 rounded-xl font-bold text-red-400 hover:bg-red-500/20 transition-all text-sm"
+          >
+            Admin
+          </button>
+        )}
       </div>
     </div>
   );

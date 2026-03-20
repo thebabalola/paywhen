@@ -13,21 +13,21 @@ export function useVaultData(vaultAddress: `0x${string}`) {
     address: vaultAddress,
     abi: USER_VAULT_ABI,
     functionName: "totalAssets",
-    query: { enabled: !!vaultAddress },
+    query: { enabled: !!vaultAddress, refetchInterval: 30_000 },
   });
 
   const totalAssetsAccrued = useReadContract({
     address: vaultAddress,
     abi: USER_VAULT_ABI,
     functionName: "totalAssetsAccrued",
-    query: { enabled: !!vaultAddress },
+    query: { enabled: !!vaultAddress, refetchInterval: 30_000 },
   });
 
   const totalSupply = useReadContract({
     address: vaultAddress,
     abi: USER_VAULT_ABI,
     functionName: "totalSupply",
-    query: { enabled: !!vaultAddress },
+    query: { enabled: !!vaultAddress, refetchInterval: 30_000 },
   });
 
   const asset = useReadContract({
@@ -41,7 +41,7 @@ export function useVaultData(vaultAddress: `0x${string}`) {
     address: vaultAddress,
     abi: USER_VAULT_ABI,
     functionName: "isPaused",
-    query: { enabled: !!vaultAddress },
+    query: { enabled: !!vaultAddress, refetchInterval: 30_000 },
   });
 
   const userShares = useReadContract({
@@ -49,35 +49,35 @@ export function useVaultData(vaultAddress: `0x${string}`) {
     abi: USER_VAULT_ABI,
     functionName: "balanceOf",
     args: [address ?? ZERO_ADDRESS],
-    query: { enabled: !!vaultAddress && !!address },
+    query: { enabled: !!vaultAddress && !!address, refetchInterval: 30_000 },
   });
 
   const aaveBalance = useReadContract({
     address: vaultAddress,
     abi: USER_VAULT_ABI,
     functionName: "getAaveBalance",
-    query: { enabled: !!vaultAddress },
+    query: { enabled: !!vaultAddress, refetchInterval: 30_000 },
   });
 
   const compoundBalance = useReadContract({
     address: vaultAddress,
     abi: USER_VAULT_ABI,
     functionName: "getCompoundBalance",
-    query: { enabled: !!vaultAddress },
+    query: { enabled: !!vaultAddress, refetchInterval: 30_000 },
   });
 
   const totalValueUSD = useReadContract({
     address: vaultAddress,
     abi: USER_VAULT_ABI,
     functionName: "getTotalValueUSD",
-    query: { enabled: !!vaultAddress },
+    query: { enabled: !!vaultAddress, refetchInterval: 30_000 },
   });
 
   const sharePriceUSD = useReadContract({
     address: vaultAddress,
     abi: USER_VAULT_ABI,
     functionName: "getSharePriceUSD",
-    query: { enabled: !!vaultAddress },
+    query: { enabled: !!vaultAddress, refetchInterval: 30_000 },
   });
 
   return {

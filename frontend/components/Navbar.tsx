@@ -6,15 +6,18 @@ import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { useAccount } from "wagmi";
 import { useIsRegistered } from "@/hooks/useVaultFactory";
-import { LayoutDashboard, Vault, BarChart2, Briefcase, Anchor } from "lucide-react";
+import { LayoutDashboard, Vault, BarChart2, Briefcase, Anchor, GitCompare, Clock } from "lucide-react";
 
 const LaunchButton = dynamic(() => import("./LaunchButton"), { ssr: false });
+const ThemeToggle = dynamic(() => import("./ThemeToggle"), { ssr: false });
 
 const NAV_LINKS = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/vaults",    label: "Vaults",    icon: Vault },
   { href: "/analytics", label: "Analytics", icon: BarChart2 },
   { href: "/portfolio", label: "Portfolio", icon: Briefcase },
+  { href: "/compare",   label: "Compare",   icon: GitCompare },
+  { href: "/history",   label: "History",   icon: Clock },
   { href: "/hook",      label: "VultHook",  icon: Anchor },
 ];
 
@@ -75,8 +78,9 @@ export default function Navbar() {
           </nav>
         )}
 
-        {/* Right: status dot + launch app + wallet button */}
+        {/* Right: theme toggle + launch app + wallet button */}
         <div className="flex items-center gap-3">
+          <ThemeToggle />
           <LaunchButton />
           {/* On landing page: show simple "Connected" pill when connected, full appkit-button otherwise */}
           {/* On inner pages: always show full appkit-button for address/balance */}

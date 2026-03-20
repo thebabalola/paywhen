@@ -47,7 +47,7 @@ export default function Home() {
     <div className="min-h-screen overflow-x-hidden">
 
       {/* ── Hero ── */}
-      <section className="relative max-w-7xl mx-auto px-5 pt-28 pb-12 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[92vh]">
+      <section className="relative max-w-7xl mx-auto px-5 pt-44 pb-20 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center min-h-screen">
 
         {/* Left copy */}
         <motion.div
@@ -61,7 +61,7 @@ export default function Home() {
           <motion.h1
             variants={item}
             style={{ letterSpacing: "-0.04em", lineHeight: 1.0, color: "var(--foreground)" }}
-            className="text-6xl sm:text-7xl font-black mb-5"
+            className="text-7xl sm:text-8xl font-black mb-6"
           >
             Yield-Native<br />
             <span style={{ color: "var(--primary)" }}>Liquidity</span><br />
@@ -72,7 +72,7 @@ export default function Home() {
           <motion.p
             variants={item}
             style={{ color: "var(--foreground-muted)", lineHeight: 1.65 }}
-            className="text-lg mb-8 max-w-md"
+            className="text-xl mb-10 max-w-lg"
           >
             ForgeX stacks ERC-4626 vault interest with Uniswap v4 swap fees into one
             automated position. Two yield sources. One vault.
@@ -117,7 +117,7 @@ export default function Home() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
           className="hidden lg:flex items-center justify-center relative"
-          style={{ minHeight: 420 }}
+          style={{ minHeight: 560 }}
         >
           {/* Outer glow pulse ring */}
           <motion.div
@@ -142,12 +142,12 @@ export default function Home() {
             <Image
               src="/hero-hook.png"
               alt="VultHook"
-              width={360}
-              height={360}
+              width={500}
+              height={500}
               className="rounded-3xl"
               style={{
                 objectFit: "cover",
-                boxShadow: "0 8px 48px rgba(143,168,40,0.22), 0 2px 12px rgba(0,0,0,0.6)",
+                boxShadow: "0 8px 64px rgba(143,168,40,0.28), 0 2px 16px rgba(0,0,0,0.7)",
               }}
               priority
             />

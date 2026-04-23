@@ -1,48 +1,51 @@
 @import "tailwindcss";
 
-/* ─── ForgeX Design Tokens — Dark (default) ───────────────────── */
+/* ─── PayWhen Design Tokens — Dark (default) ───────────────────── */
+/* Core: Celo Green + Identity Teal, dark background for premium feel */
 :root,
 [data-theme="dark"] {
-  --background:      #090A06;
-  --surface:         #121407;
-  --card:            #181B0C;
-  --card-hover:      #1E2210;
-  --border:          #282C16;
-  --border-strong:   #373D1E;
-  --primary:         #8FA828;
-  --primary-hover:   #A3C030;
-  --primary-dark:    #5E6E1A;
-  --primary-muted:   rgba(143,168,40,0.10);
-  --primary-glow:    rgba(143,168,40,0.18);
-  --foreground:      #E8E2CF;
-  --foreground-muted:#918E78;
-  --foreground-dim:  #4E4C3A;
-  --accent:          #C8BFA2;
-  --success:         #5A8A2A;
-  --warning:         #B8891A;
-  --error:           #8A3030;
+  --background:      #0B0F0E;
+  --surface:         #111827;
+  --card:            #1A2332;
+  --card-hover:      #223048;
+  --border:          #2A3B4D;
+  --border-strong:   #3D5A78;
+  --primary:         #35D07F;  /* Celo Green - Action */
+  --primary-hover:   #5EE8A0;
+  --primary-dark:    #0F766E;  /* Identity Teal - Logic/System */
+  --primary-muted:   rgba(53,208,127,0.12);
+  --primary-glow:    rgba(53,208,127,0.25);
+  --accent:          #FCFF52;  /* Celo Yellow - Highlight only */
+  --foreground:      #F0F4F8;
+  --foreground-muted:#8A9BB0;
+  --foreground-dim:  #5A6B7D;
+  --success:         #22C55E;
+  --warning:         #FACC15;
+  --error:           #EF4444;
+  --teal-muted:      rgba(15,118,110,0.3);
 }
 
-/* ─── ForgeX Design Tokens — Light ───────────────────────────── */
+/* ─── PayWhen Design Tokens — Light ───────────────────────────── */
 [data-theme="light"] {
-  --background:      #F5F4EE;
-  --surface:         #EDEBE0;
-  --card:            #E8E5D8;
-  --card-hover:      #E0DDD0;
-  --border:          #CCCAB8;
-  --border-strong:   #B4B19E;
-  --primary:         #6D8020;
-  --primary-hover:   #7A9024;
-  --primary-dark:    #4A5A14;
-  --primary-muted:   rgba(109,128,32,0.12);
-  --primary-glow:    rgba(109,128,32,0.20);
-  --foreground:      #1A1C10;
-  --foreground-muted:#5C5940;
-  --foreground-dim:  #9C9A88;
-  --accent:          #4A4428;
-  --success:         #3A6018;
-  --warning:         #8A5E10;
-  --error:           #6A2020;
+  --background:      #F9FAFB;
+  --surface:         #FFFFFF;
+  --card:            #FFFFFF;
+  --card-hover:      #F3F4F6;
+  --border:          #E5E7EB;
+  --border-strong:   #D1D5DB;
+  --primary:         #059669;  /* Darker green for light mode */
+  --primary-hover:   #047857;
+  --primary-dark:    #0F766E;
+  --primary-muted:   rgba(5,150,105,0.10);
+  --primary-glow:    rgba(5,150,105,0.18);
+  --accent:          #FACC15;  /* Yellow for highlights */
+  --foreground:      #111827;
+  --foreground-muted:#6B7280;
+  --foreground-dim:  #9CA3AF;
+  --success:         #059669;
+  --warning:         #D97706;
+  --error:           #DC2626;
+  --teal-muted:      rgba(15,118,110,0.12);
 }
 
 @theme inline {

@@ -138,34 +138,9 @@ const config: HardhatUserConfig = {
       accounts: [deployerPrivateKey],
     },
   },
-  // Configuration for harhdat-verify plugin
+  // Configuration for hardhat-verify plugin (Etherscan V2)
   etherscan: {
-    apiKey: {
-      mainnet: etherscanApiKey,
-      sepolia: etherscanApiKey,
-      base: etherscanApiKey,
-      baseSepolia: etherscanApiKey,
-      celo: process.env.CELOSCAN_API_KEY || etherscanApiKey, // Celo uses Celoscan
-      celoAlfajores: process.env.CELOSCAN_API_KEY || etherscanApiKey,
-    },
-    customChains: [
-      {
-        network: "celo",
-        chainId: 42220,
-        urls: {
-          apiURL: "https://api.celoscan.io/api",
-          browserURL: "https://celoscan.io",
-        },
-      },
-      {
-        network: "celoAlfajores",
-        chainId: 44787,
-        urls: {
-          apiURL: "https://api-alfajores.celoscan.io/api",
-          browserURL: "https://alfajores.celoscan.io",
-        },
-      },
-    ],
+    apiKey: etherscanApiKey,
   },
   sourcify: {
     enabled: false,

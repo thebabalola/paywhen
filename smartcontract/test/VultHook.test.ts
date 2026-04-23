@@ -45,7 +45,7 @@ describe("VultHook — Admin & State Management", function () {
     // Deploy VultHook with a mock pool manager address (owner acts as pool manager for unit tests)
     // We use a minimal deployment — the hook's core logic (afterSwap etc.) requires PoolManager
     // callbacks, so we test admin functions directly here.
-    const VultHookFactory = await ethers.getContractFactory("VultHook");
+    const VultHookFactory = await ethers.getContractFactory("contracts/vult/VultHook.sol:VultHook");
     vultHook = await VultHookFactory.deploy(owner.address);
     await vultHook.waitForDeployment();
   });

@@ -5,7 +5,7 @@ import {IPoolManager} from "@uniswap/v4-core/src/interfaces/IPoolManager.sol";
 import {PoolKey} from "@uniswap/v4-core/src/types/PoolKey.sol";
 import {BalanceDelta} from "@uniswap/v4-core/src/types/BalanceDelta.sol";
 
-contract MockPoolManager is IPoolManager {
+abstract contract MockPoolManager is IPoolManager {
     uint256 public donateCount;
     PoolKey public lastKey;
     uint256 public lastAmount0;

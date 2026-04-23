@@ -1,16 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-/**
- * @title ConditionalPayment
- * @notice Escrow contract for conditional payments
- * @dev Holds funds in escrow and executes when conditions are met
- */
+// ConditionalPayment
+// Escrow contract for conditional payments
+// Holds funds in escrow and executes when conditions are met
 contract ConditionalPayment {
-    /*//////////////////////////////////////////////////////////////
-                            STATE VARIABLES
-    //////////////////////////////////////////////////////////////*/
-
     address public immutable sender;
     address public immutable recipient;
     uint256 public immutable amount;
@@ -42,25 +36,15 @@ contract ConditionalPayment {
 
     uint256 public constant REFUND_TIMEOUT = 30 days;
 
-    /*//////////////////////////////////////////////////////////////
-                                EVENTS
-    //////////////////////////////////////////////////////////////*/
-
+    // Emitted when a payment is executed
     event PaymentExecuted(address indexed paymentAddress, address recipient, uint256 amount);
+
+    // Emitted when a payment is refunded
     event PaymentRefunded(address indexed paymentAddress, address sender, uint256 amount);
+
+    // Emitted when a manual payment is approved
     event ManualApproval(address indexed approver, address indexed paymentAddress);
 
-    /*//////////////////////////////////////////////////////////////
-                             CONSTRUCTOR
-    //////////////////////////////////////////////////////////////*/
-
-    /**
-     * @param _sender The payment creator
-     * @param _recipient The payment receiver
-     * @param _amount The payment amount in wei
-     * @param _conditionType The condition type (0=TIMESTAMP, 1=MANUAL, 2=RECURRING)
-     * @param _conditionData ABI-encoded condition parameters
-     */
     constructor(
         address _sender,
         address _recipient,
@@ -83,51 +67,34 @@ contract ConditionalPayment {
         _decodeConditionData(_conditionData);
     }
 
-    /*//////////////////////////////////////////////////////////////
-                        CONDITION DECODING
-    //////////////////////////////////////////////////////////////*/
-
     function _decodeConditionData(bytes memory _conditionData) internal {
         if (conditionType == ConditionType.TIMESTAMP) {
-            // _conditionData: abi.encode(executeAt)
             executeAt = abi.decode(_conditionData, (uint256));
             require(executeAt > block.timestamp, "Timestamp must be future");
             require(executeAt <= block.timestamp + 365 days, "Too far future");
         } else if (conditionType == ConditionType.MANUAL) {
-            // _conditionData: abi.encode(approvers[], requiredApprovals)
             (address[] memory _approvers, uint256 _required) = abi.decode(
                 _conditionData,
                 (address[], uint256)
             );
             require(_approvers.length > 0, "Need approvers");
             require(_required > 0 && _required <= _approvers.length, "Invalid threshold");
-
             approvers = _approvers;
             requiredApprovals = _required;
         } else if (conditionType == ConditionType.RECURRING) {
-            // _conditionData: abi.encode(startTime, interval, occurrences)
             (uint256 _start, uint256 _interval, uint256 _occurrences) = abi.decode(
                 _conditionData,
                 (uint256, uint256, uint256)
             );
             require(_start >= block.timestamp, "Start in past");
             require(_interval >= 1 days && _interval <= 365 days, "Invalid interval");
-
             startTime = _start;
             interval = _interval;
             occurrences = _occurrences;
             executedCount = 0;
         }
-        // ORACLE: would decode oracle-specific data here
     }
 
-    /*//////////////////////////////////////////////////////////////
-                         CORE FUNCTIONS
-    //////////////////////////////////////////////////////////////*/
-
-    /**
-     * @notice Execute payment if condition is met
-     */
     function execute() external {
         require(!executed, "Already executed");
         require(!refunded, "Already refunded");
@@ -137,22 +104,17 @@ contract ConditionalPayment {
 
         if (conditionType == ConditionType.RECURRING) {
             executedCount++;
-            // Reset for next occurrence if infinite or more remaining
             if (occurrences == 0 || executedCount < occurrences) {
-                executed = false; // Allow next execution
+                executed = false;
                 startTime += interval;
             }
         }
 
         (bool success, ) = recipient.call{value: amount}("");
         require(success, "Transfer failed");
-
         emit PaymentExecuted(address(this), recipient, amount);
     }
 
-    /**
-     * @notice Refund sender if condition cannot be met
-     */
     function refund() external {
         require(!executed, "Already executed");
         require(!refunded, "Already refunded");
@@ -162,31 +124,21 @@ contract ConditionalPayment {
             (conditionType == ConditionType.MANUAL && _isRefundTimeElapsed()),
             "Refund not available"
         );
-
         refunded = true;
         (bool success, ) = sender.call{value: amount}("");
         require(success, "Transfer failed");
-
         emit PaymentRefunded(address(this), sender, amount);
     }
 
-    /**
-     * @notice Approve manual payment (for MANUAL condition type)
-     */
     function approveManual() external {
         require(conditionType == ConditionType.MANUAL, "Not manual payment");
         require(!executed, "Already executed");
         require(!refunded, "Already refunded");
         require(_isApprover(msg.sender), "Not an approver");
         require(!approvedBy[msg.sender], "Already approved");
-
         approvedBy[msg.sender] = true;
         emit ManualApproval(msg.sender, address(this));
     }
-
-    /*//////////////////////////////////////////////////////////////
-                        INTERNAL HELPERS
-    //////////////////////////////////////////////////////////////*/
 
     function _checkCondition() internal view returns (bool) {
         if (conditionType == ConditionType.TIMESTAMP) {
@@ -197,11 +149,10 @@ contract ConditionalPayment {
             return block.timestamp >= startTime &&
                    (occurrences == 0 || executedCount < occurrences);
         }
-        return false; // ORACLE: would check oracle condition
+        return false;
     }
 
     function _isRefundTimeElapsed() internal view returns (bool) {
-        // Allow refund after 7 days if payment hasn't been executed
         return block.timestamp > createdAt + 7 days;
     }
 
@@ -220,10 +171,6 @@ contract ConditionalPayment {
         return false;
     }
 
-    /*//////////////////////////////////////////////////////////////
-                          VIEW FUNCTIONS
-    //////////////////////////////////////////////////////////////*/
-
     function checkCondition() external view returns (bool) {
         return _checkCondition();
     }
@@ -235,7 +182,7 @@ contract ConditionalPayment {
     function getStatus() external view returns (
         address senderAddr,
         address recipientAddr,
-        uint256 amount_,  // renamed to avoid name collision with amount
+        uint256 amount_,
         bool executed_,
         bool refunded_,
         uint256 remainingTime
@@ -245,10 +192,8 @@ contract ConditionalPayment {
         amount_ = amount;
         executed_ = executed;
         refunded_ = refunded;
-
         if (conditionType == ConditionType.TIMESTAMP && !executed) {
-            remainingTime = executeAt > block.timestamp ?
-                executeAt - block.timestamp : 0;
+            remainingTime = executeAt > block.timestamp ? executeAt - block.timestamp : 0;
         }
     }
 
@@ -258,9 +203,7 @@ contract ConditionalPayment {
     ) {
         if (conditionType == ConditionType.RECURRING) {
             nextExecution = startTime;
-            remainingOccurrences = occurrences == 0 ?
-                type(uint256).max :
-                occurrences - executedCount;
+            remainingOccurrences = occurrences == 0 ? type(uint256).max : occurrences - executedCount;
         }
     }
 
@@ -268,7 +211,6 @@ contract ConditionalPayment {
         return approvers;
     }
 
-    // Prevent accidental ETH sends
     receive() external payable {
         revert("Use create functions");
     }

@@ -4,29 +4,29 @@ import Web3Provider from "@/context/Web3Provider";
 import ClientLayout from "@/components/ClientLayout";
 
 export const metadata: Metadata = {
-  title: { template: "%s | ForgeX: Vult", default: "ForgeX: Vult — Yield-Native Liquidity Hooks on Base" },
+  title: { template: "%s | PayWhen", default: "PayWhen — Conditional Payment Protocol" },
   description:
-    "ForgeX stacks ERC-4626 vault yield with Uniswap v4 swap fees into a single AI-driven strategy on Base. Stack more. Earn more.",
-  keywords: ["ForgeX", "Vult", "ERC-4626", "Uniswap v4", "yield hooks", "Base", "DeFi", "AI vault"],
-  authors: [{ name: "ForgeX Protocol" }],
-  creator: "ForgeX Protocol",
+    "PayWhen is an intent-based payment protocol that allows users to define conditions under which funds are automatically executed on-chain.",
+  keywords: ["PayWhen", "conditional payments", "escrow", "Celo", "DeFi", "smart contracts"],
+  authors: [{ name: "PayWhen Protocol" }],
+  creator: "PayWhen Protocol",
   openGraph: {
     type: "website",
-    title: "ForgeX: Vult — Yield-Native Liquidity Hooks",
-    description: "Stack ERC-4626 vault yield with Uniswap v4 swap fees. AI-driven strategy optimization on Base.",
-    siteName: "ForgeX: Vult",
-    images: [{ url: "/forgex-logo.png", width: 44, height: 44, alt: "ForgeX Logo" }],
+    title: "PayWhen — Conditional Payment Protocol",
+    description: "Intent-based conditional payments with on-chain escrow and automatic execution.",
+    siteName: "PayWhen",
+    images: [{ url: "/favicon.svg", width: 44, height: 44, alt: "PayWhen Logo" }],
   },
   twitter: {
     card: "summary",
-    title: "ForgeX: Vult",
-    description: "Yield-Native Liquidity Hooks on Base. ERC-4626 + Uniswap v4 + AI.",
-    images: ["/forgex-logo.png"],
+    title: "PayWhen — Conditional Payments",
+    description: "PayWhen: Define conditions, hold in escrow, automatic execution.",
+    images: ["/favicon.svg"],
   },
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
-    apple: "/forgex-logo.png",
+    apple: "/favicon.svg",
   },
   robots: { index: true, follow: true },
 };

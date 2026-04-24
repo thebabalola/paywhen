@@ -1,15 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { TrendingUp, Layers, Cpu, ArrowUpRight, Zap } from "lucide-react";
 
 const float = {
   animate: { y: [0, -8, 0] },
   transition: { duration: 3.5, repeat: Infinity, ease: "easeInOut" as const },
-};
-const floatAlt = {
-  animate: { y: [0, -6, 0], rotate: [0, 1, 0] },
-  transition: { duration: 4.2, repeat: Infinity, ease: "easeInOut" as const, delay: 0.8 },
 };
 
 export default function HeroIllustration() {
@@ -26,21 +21,23 @@ export default function HeroIllustration() {
         ))}
       </svg>
 
-      {/* Central hook mark — large watermark */}
+      {/* Central payment icon */}
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
       >
-        <svg width="180" height="180" viewBox="0 0 44 44" fill="none">
-          <line x1="12" y1="12" x2="28" y2="30" stroke="#8FA828" strokeWidth="2" strokeLinecap="round" opacity="0.25"/>
-          <path d="M32 12 L22 22 L22 28 C22 32 17.5 33.5 15 31" stroke="#8FA828" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.25"/>
-          <circle cx="12" cy="30" r="2.8" fill="#C8BFA2" opacity="0.18"/>
+        <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#8FA828" strokeWidth="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" />
+          <circle cx="12" cy="5" r="2" />
+          <path d="M12 7v4" />
+          <line x1="8" y1="16" x2="8" y2="16" />
+          <line x1="16" y1="16" x2="16" y2="16" />
         </svg>
       </motion.div>
 
-      {/* Float card 1 — Vault yield */}
+      {/* Float card 1 — Conditional Payment */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, ...float.animate }}
@@ -49,42 +46,36 @@ export default function HeroIllustration() {
         className="absolute rounded-2xl px-4 py-3 w-48 shadow-xl"
       >
         <div className="flex items-center gap-2 mb-2">
-          <div style={{ background: "var(--primary-muted)", borderRadius: 8 }} className="w-7 h-7 flex items-center justify-center">
-            <TrendingUp size={13} color="#8FA828" />
-          </div>
-          <span className="label">ERC-4626 Vault</span>
+          <span className="label">Conditional Payment</span>
         </div>
         <div style={{ color: "var(--primary)", fontWeight: 900, fontSize: 22, letterSpacing: "-0.03em" }}>
-          12.4% APY
+          Escrow + Auto-Execute
         </div>
         <div style={{ color: "var(--foreground-muted)", fontSize: 11, marginTop: 2 }}>
-          Base · WETH vault
+          Time-based, Manual, Recurring
         </div>
       </motion.div>
 
-      {/* Float card 2 — Uniswap v4 fees */}
+      {/* Float card 2 — Trustless */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, ...floatAlt.animate }}
-        transition={{ ...floatAlt.transition, delay: 0.4 }}
+        animate={{ opacity: 1, ...float.animate }}
+        transition={{ ...float.transition, delay: 0.4 }}
         style={{ background: "var(--card)", border: "1px solid var(--border-strong)", top: "10%", right: "2%"  }}
-        className="absolute rounded-2xl px-4 py-3 w-46 shadow-xl"
+        className="absolute rounded-2xl px-4 py-3 w-44 shadow-xl"
       >
         <div className="flex items-center gap-2 mb-2">
-          <div style={{ background: "rgba(200,191,162,0.08)", borderRadius: 8 }} className="w-7 h-7 flex items-center justify-center">
-            <Zap size={13} color="#C8BFA2" />
-          </div>
-          <span className="label">Swap Fees</span>
+          <span className="label">Trustless</span>
         </div>
         <div style={{ color: "var(--accent)", fontWeight: 900, fontSize: 22, letterSpacing: "-0.03em" }}>
-          +4.1%
+          No Middleman
         </div>
         <div style={{ color: "var(--foreground-muted)", fontSize: 11, marginTop: 2 }}>
-          Uniswap v4 hook
+          On-chain enforcement
         </div>
       </motion.div>
 
-      {/* Float card 3 — AI strategy */}
+      {/* Float card 3 — Multi-chain */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: [0, -6, 0] }}
@@ -93,60 +84,11 @@ export default function HeroIllustration() {
         className="absolute rounded-2xl px-4 py-3 w-52 shadow-xl"
       >
         <div className="flex items-center gap-2 mb-2">
-          <div style={{ background: "var(--primary-muted)", borderRadius: 8 }} className="w-7 h-7 flex items-center justify-center">
-            <Cpu size={13} color="#8FA828" />
-          </div>
-          <span className="label">AI Strategy</span>
+          <span className="label">Multi-Chain</span>
         </div>
         <div style={{ color: "var(--foreground)", fontWeight: 700, fontSize: 13, lineHeight: 1.4 }}>
-          Rebalancing vault allocation for optimal fee capture
+          Deploy on Celo and EVM chains
         </div>
-        <div className="flex items-center gap-1 mt-2">
-          <span style={{ background: "var(--primary-muted)", color: "var(--primary)", fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 999 }}>
-            ACTIVE
-          </span>
-        </div>
-      </motion.div>
-
-      {/* Float card 4 — Total stacked */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: [0, -7, 0] }}
-        transition={{ duration: 4.0, repeat: Infinity, ease: "easeInOut", delay: 1.0 }}
-        style={{ background: "var(--card)", border: "1px solid rgba(143,168,40,0.28)", bottom: "12%", right: "4%" }}
-        className="absolute rounded-2xl px-4 py-3 w-44 shadow-xl"
-      >
-        <div className="flex items-center justify-between mb-2">
-          <span className="label">Total Stacked</span>
-          <ArrowUpRight size={12} color="#8FA828" />
-        </div>
-        <div style={{ color: "var(--primary)", fontWeight: 900, fontSize: 24, letterSpacing: "-0.03em" }}>
-          16.5%
-        </div>
-        <div style={{ color: "var(--foreground-muted)", fontSize: 11 }}>
-          Vault + Hook APY
-        </div>
-        {/* Mini bar */}
-        <div style={{ background: "var(--border)", borderRadius: 999, height: 4, marginTop: 8 }}>
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: "75%" }}
-            transition={{ delay: 1.2, duration: 1, ease: "easeOut" }}
-            style={{ background: "var(--primary)", borderRadius: 999, height: "100%" }}
-          />
-        </div>
-      </motion.div>
-
-      {/* Float card 5 — Protocol layers badge */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1, y: [0, -5, 0] }}
-        transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut", delay: 1.4 }}
-        style={{ background: "var(--surface)", border: "1px solid var(--border)", top: "50%", left: "38%", transform: "translateY(-50%)" }}
-        className="absolute rounded-xl px-3 py-2 flex items-center gap-2"
-      >
-        <Layers size={14} color="#C8BFA2" />
-        <span style={{ color: "var(--accent)", fontSize: 12, fontWeight: 700 }}>VultHook v1</span>
       </motion.div>
     </div>
   );

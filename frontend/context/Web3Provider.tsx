@@ -12,10 +12,10 @@ const queryClient = new QueryClient()
 const projectId = process.env.NEXT_PUBLIC_REOWN_PROJECT_ID || 'placeholder-build-id'
 
 const metadata = {
-  name: 'ForgeX: Vult',
-  description: 'Yield-Native Liquidity Hooks on Base',
-  url: 'https://forgex.vercel.app',
-  icons: ['/logo.svg'],
+  name: 'PayWhen',
+  description: 'Conditional payment protocol for on-chain escrow and automatic execution',
+  url: 'https://paywhen.vercel.app',
+  icons: ['/favicon.svg'],
 }
 
 const wagmiAdapter = new WagmiAdapter({

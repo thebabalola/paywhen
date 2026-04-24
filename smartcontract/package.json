@@ -1,7 +1,7 @@
 {
-  "name": "smartx-smartcontracts",
+  "name": "paywhen-smartcontracts",
   "version": "0.1.0",
-  "description": "Smart contracts for SmartX - ERC-4626 vault platform on Base Mainnet",
+  "description": "Smart contracts for PayWhen - intent-based conditional payment protocol on Celo",
   "main": "index.js",
   "scripts": {
     "compile": "hardhat compile",

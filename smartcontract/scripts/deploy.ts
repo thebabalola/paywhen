@@ -3,42 +3,34 @@ import { ethers } from "hardhat";
 async function main() {
   const [deployer] = await ethers.getSigners();
   const deployerAddress = await deployer.getAddress();
-  console.log("Deploying contracts with the account:", deployerAddress);
+  console.log("Deploying PayWhen contracts with the account:", deployerAddress);
 
-  const factoryAddressEnv = process.env.FACTORY_ADDRESS;
-  let factoryAddress = factoryAddressEnv;
+  // Deploy PaymentFactory
+  console.log("\n1. Deploying PaymentFactory...");
+  const PaymentFactory = await ethers.getContractFactory("PaymentFactory");
+  const paymentFactory = await PaymentFactory.deploy();
+  await paymentFactory.waitForDeployment();
+  const factoryAddress = await paymentFactory.getAddress();
+  console.log("PaymentFactory deployed to:", factoryAddress);
 
-  if (!factoryAddressEnv) {
-    // 1. Deploy VaultFactory
-    console.log("Deploying VaultFactory...");
-    const VaultFactory = await ethers.getContractFactory("VaultFactory");
-    const vaultFactory = await VaultFactory.deploy(deployerAddress);
-    await vaultFactory.waitForDeployment();
-    factoryAddress = await vaultFactory.getAddress();
-    console.log("VaultFactory deployed to:", factoryAddress);
-  } else {
-    console.log("VaultFactory already deployed at:", factoryAddress);
-  }
+  // Deploy a sample VaultAdapter (optional)
+  console.log("\n2. Deploying VaultAdapter...");
+  const VaultAdapter = await ethers.getContractFactory("VaultAdapter");
+  const vaultAdapter = await VaultAdapter.deploy(ethers.ZeroAddress, "PayWhen Vault");
+  await vaultAdapter.waitForDeployment();
+  const vaultAddress = await vaultAdapter.getAddress();
+  console.log("VaultAdapter deployed to:", vaultAddress);
 
-  // 2. Deploy VultHook
-  const poolManagerAddress = (process.env.POOL_MANAGER_ADDRESS || "0x498581ff718922c3f8e6a2444956af099b2652b2").toLowerCase();
-  
-  // Ensure poolManagerAddress is a valid address string, not an object
-  const validPoolManagerAddress = ethers.getAddress(poolManagerAddress);
-  console.log("Deploying VultHook with PoolManager:", validPoolManagerAddress);
-  
-  const VultHook = await ethers.getContractFactory("VultHook");
-  const vultHook = await VultHook.deploy(validPoolManagerAddress);
-  await vultHook.waitForDeployment();
-  const hookAddress = await vultHook.getAddress();
-  console.log("VultHook deployed to:", hookAddress);
+  // Register vault with factory
+  console.log("\n3. Registering vault adapter...");
+  const tx = await paymentFactory.setVaultAdapter(vaultAddress, true);
+  await tx.wait();
+  console.log("Vault adapter registered");
 
-  console.log("\nWait for a few blocks for explorer to index...");
-  
-  // Verification details
-  console.log("\nRun the following commands to verify:");
-  console.log(`npx hardhat verify --network base ${factoryAddress} "${deployerAddress}"`);
-  console.log(`npx hardhat verify --network base ${hookAddress} "${validPoolManagerAddress}"`);
+  console.log("\n=== Deployment Complete ===");
+  console.log("PaymentFactory:", factoryAddress);
+  console.log("VaultAdapter:", vaultAddress);
+  console.log("\nSupported networks: Celo Alfajores, Celo Mainnet");
 }
 
 main().catch((error) => {

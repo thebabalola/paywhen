@@ -43,6 +43,15 @@ export const metadata: Metadata = {
     apple: "/paywhen.svg",
   },
   robots: { index: true, follow: true },
+  // Ensure the verification tag is rendered in the HTML head for verifier crawlers
+  verification: {
+    "talentapp:project_verification":
+      "f7c5e13669525ccc934a994861757841cddf441819478b371dcf13769e6007339ceb2d37e7efe588b1eac0eea0904cae3bd30cbd8c9402c9228c58eb2344069a",
+  },
+  other: {
+    "talentapp:project_verification":
+      "f7c5e13669525ccc934a994861757841cddf441819478b371dcf13769e6007339ceb2d37e7efe588b1eac0eea0904cae3bd30cbd8c9402c9228c58eb2344069a",
+  },
 };
 
 export const viewport: Viewport = {
@@ -52,11 +61,6 @@ export const viewport: Viewport = {
 };
 
 export const metadataBase = new URL("https://paywhen.vercel.app");
-
-export const talentappVerification = {
-  "talentapp:project_verification":
-    "f7c5e13669525ccc934a994861757841cddf441819478b371dcf13769e6007339ceb2d37e7efe588b1eac0eea0904cae3bd30cbd8c9402c9228c58eb2344069a",
-};
 
 export default function RootLayout({
   children,

@@ -4,7 +4,6 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 import UniversalProvider from "@walletconnect/universal-provider";
 import { createAppKit } from "@reown/appkit/react";
 import { mainnet } from "@reown/appkit/networks";
-import { type AppKit } from "@reown/appkit";
 
 const projectId = process.env.NEXT_PUBLIC_REOWN_PROJECT_ID || "";
 
@@ -39,7 +38,6 @@ export function ReownProvider({ children }: { children: ReactNode }) {
   const [provider, setProvider] = useState<UniversalProvider | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [address, setAddress] = useState<string | null>(null);
-  const { open: appKitOpen } = useAppKit();
 
   useEffect(() => {
     async function initProvider() {
@@ -67,7 +65,7 @@ export function ReownProvider({ children }: { children: ReactNode }) {
   };
 
   const open = async () => {
-    await appKitOpen();
+    await modal.open();
   };
 
   const disconnect = async () => {

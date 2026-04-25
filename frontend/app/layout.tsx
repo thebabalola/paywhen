@@ -1,5 +1,5 @@
 import "./globals.css";
-import { ReownProvider } from "@/context/ReownProvider";
+import Web3Provider from "@/context/Web3Provider";
 import { WalletConnectButton } from "@/components/WalletConnectButton";
 
 export default function RootLayout({
@@ -10,12 +10,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ReownProvider>
+        <Web3Provider>
           <header>
             <WalletConnectButton />
           </header>
           <main>{children}</main>
-        </ReownProvider>
+        </Web3Provider>
       </body>
     </html>
   );

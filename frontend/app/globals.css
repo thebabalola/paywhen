@@ -167,3 +167,16 @@ body {
 ::-webkit-scrollbar-track { background: var(--background); }
 ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 999px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
+
+.btn-retro {
+  background: #3b82f6;
+  color: white;
+  border: 2px solid #2563eb;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.btn-retro:hover {
+  background: #2563eb;
+}

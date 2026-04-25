@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import Head from "next/head";
 import "./globals.css";
 import Web3Provider from "@/context/Web3Provider";
 import ClientLayout from "@/components/ClientLayout";
@@ -44,6 +43,11 @@ export const metadata: Metadata = {
     apple: "/paywhen.svg",
   },
   robots: { index: true, follow: true },
+  // THIS IS THE FIX: Moving the verification into the metadata object
+  other: {
+    "talentapp:project_verification":
+      "f7c5e13669525ccc934a994861757841cddf441819478b371dcf13769e6007339ceb2d37e7efe588b1eac0eea0904cae3bd30cbd8c9402c9228c58eb2344069a",
+  },
 };
 
 export const viewport: Viewport = {
@@ -52,6 +56,7 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+// It's better to export this as a property of the metadata object or keep it as is
 export const metadataBase = new URL("https://paywhen.vercel.app");
 
 export default function RootLayout({
@@ -63,12 +68,6 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased">
         <Web3Provider>
-          <Head>
-            <meta
-              name="talentapp:project_verification"
-              content="f7c5e13669525ccc934a994861757841cddf441819478b371dcf13769e6007339ceb2d37e7efe588b1eac0eea0904cae3bd30cbd8c9402c9228c58eb2344069a"
-            />
-          </Head>
           <ClientLayout>{children}</ClientLayout>
         </Web3Provider>
       </body>

@@ -1,12 +1,36 @@
-export const VAULT_FACTORY_ADDRESS = "0x8374257da04F00ABAf74E13EFE5A17B0f08EC226" as `0x${string}`;
-export const VULT_HOOK_ADDRESS = "0xe988b6816d94C10377779F08f2ab08925cE96D09" as `0x${string}`;
-export const BASE_POOL_MANAGER = "0x498581Ff718922c3f8e6A2444956aF099B2652b2" as `0x${string}`;
+// PaymentFactory deployed on Celo Mainnet
+export const PAYMENT_FACTORY_ADDRESS = "0x8D6259A4138032Df3FB6594012ff38Db1d1aB96c" as `0x${string}`
 
-// Token addresses on Base Mainnet
-export const WETH_ADDRESS = "0x4200000000000000000000000000000000000006" as `0x${string}`;
-export const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" as `0x${string}`;
-export const DAI_ADDRESS  = "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb" as `0x${string}`;
-export const USDT_ADDRESS = "0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2" as `0x${string}`;
+// Network configurations
+export const CELO_MAINNET = {
+  chainId: 42220,
+  name: 'Celo',
+  nativeCurrency: { name: 'Celo', symbol: 'CELO', decimals: 18 },
+  rpcUrls: { default: { http: ['https://forno.celo.org'] } },
+  blockExplorerUrls: { default: 'https://celoscan.io' }
+} as const
 
-// AI Backend
-export const AI_BACKEND_URL = process.env.NEXT_PUBLIC_AI_BACKEND_URL || "http://localhost:8000";
+export const CELO_ALFAJORES = {
+  chainId: 44787,
+  name: 'Celo Alfajores',
+  nativeCurrency: { name: 'Celo', symbol: 'CELO', decimals: 18 },
+  rpcUrls: { default: { http: ['https://alfajores-forno.celo-testnet.org'] } },
+  blockExplorerUrls: { default: 'https://alfajores.celoscan.io' }
+} as const
+
+// ConditionalPayment condition types
+export enum ConditionType {
+  TIMESTAMP = 0,
+  MANUAL = 1,
+  RECURRING = 2,
+  ORACLE = 3
+}
+
+// Supported networks for deployment
+export const SUPPORTED_NETWORKS = {
+  celo: CELO_MAINNET,
+  celoAlfajores: CELO_ALFAJORES
+} as const
+
+// Default network for deployments
+export const DEFAULT_NETWORK = 'celo' as const

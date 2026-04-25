@@ -7,11 +7,11 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript)](https://typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-06B6D4?style=flat-square&logo=tailwindcss)](https://tailwindcss.com)
 [![Wagmi](https://img.shields.io/badge/Wagmi-v3-8FA828?style=flat-square)](https://wagmi.sh)
-[![Network](https://img.shields.io/badge/Celo-Testnet-16D14E?style=flat-square&logo=celo)](https://celo.org)
+[![Network](https://img.shields.io/badge/Celo-Mainnet-16D14E?style=flat-square&logo=celo)](https://celo.org)
 
-Next.js 16.1.1 frontend for the PayWhen intent-based payment protocol on Celo. 8 pages, real-time on-chain data, and a full olive green design system.
+Next.js 16.1.1 frontend for the PayWhen intent-based conditional payment protocol on Celo. Features full smart contract integration with PaymentFactory, support for time-based/manual/recurring payments, and wallet connectivity via Reown AppKit.
 
-**[Live Miniapp](https://paywhen.vercel.app/) · [Main Repo](https://github.com/BitBand-Labs/paywhen)**
+**[Live Miniapp](https://paywhen.vercel.app/) · [Main Repo](https://github.com/thebabalola/paywhen)**
 
 </div>
 
@@ -27,7 +27,7 @@ Next.js 16.1.1 frontend for the PayWhen intent-based payment protocol on Celo. 8
 | Tailwind CSS | v4 | Utility styling (JIT, CSS variables) |
 | Wagmi | v3 | React hooks for Ethereum |
 | Viem | v2 | Low-level on-chain reads and writes |
-| Reown AppKit | latest | Wallet modal |
+| Reown AppKit | 1.8.19 | Wallet modal & connection |
 
 ---
 
@@ -35,122 +35,90 @@ Next.js 16.1.1 frontend for the PayWhen intent-based payment protocol on Celo. 8
 
 ```
 frontend/
-├── app/                          # Next.js App Router pages
-│   ├── page.tsx                  # Landing page — payment creation
-│   ├── payments/                 # View all payments
-│   ├── create/                   # Step-by-step payment setup
-│   ├── history/                  # Past payments & execution log
-│   └── layout.tsx                # Root layout with ThemeProvider
-├── components/                   # React components
-│   ├── CreatePayment.tsx         # Payment creation form
-│   ├── PaymentCard.tsx           # Single payment display
-│   ├── PaymentList.tsx           # List of user payments
-│   ├── Navbar.tsx                # Navigation with wallet connect
-│   ├── ThemeToggle.tsx           # Dark/light mode switch
-│   └── Toast.tsx                 # Notification toasts
-├── hooks/                        # Custom React hooks
-│   ├── usePaymentFactory.ts      # Factory contract interactions
-│   └── useConditionalPayment.ts  # Payment contract interactions
-├── lib/                          # Utilities & configs
-│   ├── wagmi.ts                  # Wagmi configuration
-│   ├── constants.ts              # Contract addresses, chains
-│   └── abis.ts                   # Contract ABIs
+├── app/
+│   ├── page.tsx                  # Main payment creation & status page
+│   ├── layout.tsx                # Root layout with Web3Provider
+│   └── globals.css               # Global styles + Tailwind
+├── components/
+│   ├── ClientLayout.tsx          # Layout wrapper with navbar
+│   ├── Navbar.tsx                # Top navigation
+│   ├── HeroIllustration.tsx      # Hero section graphic
+│   ├── LaunchButton.tsx          # CTA button
+│   ├── SecurityNotice.tsx        # Auditing disclaimer
+│   └── ThemeToggle.tsx           # Dark/light mode switch
+├── context/
+│   └── Web3Provider.tsx          # Wagmi + AppKit provider
+├── lib/
+│   ├── contracts.ts              # Contract ABIs & types
+│   ├── constants.ts              # Network configs, addresses
+│   ├── hooks.ts                  # Contract interaction hooks
+│   └── wagmi.ts                  # Wagmi configuration (deprecated — use Web3Provider)
 └── public/                       # Static assets
 ```
 
 ---
 
-## 🎨 Features
+## 🎯 Core Features
 
-### Core Functionality
-- **Create Payments**: Time-based, manual approval, recurring
-- **View Payments**: Filter by status (active/pending/completed)
-- **Execute Payments**: Manual trigger when conditions met
-- **Refund Payments**: Get funds back after timeout
-- **Real-time Status**: Live updates via contract events
+### Payment Types
+- **Time-based** — Funds released at specific timestamp
+- **Manual Approval** — Requires approver signatures
+- **Recurring** — Scheduled automated payments
 
-### UI/UX
-- **Mobile-First**: Optimized for small screens
-- **Dark/Light Mode**: Toggle with system preference
-- **Wallet Connect**: Reown AppKit integration
-- **Smooth Animations**: Framer Motion transitions
-- **Toast Notifications**: Action feedback
-
----
-
-## 🚦 Available Pages
-
-| Route | Description |
-|-------|-------------|
-| `/` | Landing page with payment creation |
-| `/payments` | List of all your payments |
-| `/create` | Step-by-step payment setup wizard |
-| `/create/time` | Create time-based payment |
-| `/create/manual` | Create manual approval payment |
-| `/create/recurring` | Create recurring payment |
-| `/history` | Past payments & execution log |
+### User Workflow
+- Connect wallet (Reown AppKit)
+- Select payment type
+- Enter recipient & amount
+- Set condition parameters
+- Submit transaction (payment contract deployed)
+- View payment status & history
 
 ---
 
-## 🧩 Components
+## 🔧 Contract Integration
 
-| Component | File | Description |
-|-----------|------|-------------|
-| `CreatePayment` | `components/CreatePayment.tsx` | Payment creation form (step wizard) |
-| `PaymentCard` | `components/PaymentCard.tsx` | Single payment display with status |
-| `PaymentList` | `components/PaymentList.tsx` | Grid/list of user payments |
-| `Navbar` | `components/Navbar.tsx` | Top navigation with wallet connect |
-| `ThemeToggle` | `components/ThemeToggle.tsx` | Dark/light mode switch |
-| `Toast` | `components/Toast.tsx` | Notification system (success/error) |
+### Deployed Contracts (Celo Mainnet)
 
----
+| Contract | Address |
+|----------|---------|
+| PaymentFactory | `0x8D6259A4138032Df3FB6594012ff38Db1d1aB96c` |
+| ConditionalPayment | *(deployed per-payment via factory)* |
 
-## 🪝 Custom Hooks
+**Verification:** [PaymentFactory on Celoscan](https://celoscan.io/address/0x8D6259A4138032Df3FB6594012ff38Db1d1aB96c#code)
 
-### `usePaymentFactory()`
-Reads from and writes to `PaymentFactory.sol`:
+### Hooks (`lib/hooks.ts`)
 
-| Hook | Description |
-|------|-------------|
-| `useTotalPayments()` | Returns total number of payments created |
-| `useUserPayments(address)` | Returns payment IDs for a user |
-| `useCreateTimePayment()` | Creates a timestamp-based payment |
-| `useCreateManualPayment()` | Creates a manual approval payment |
-| `useCreateRecurringPayment()` | Creates a recurring payment |
-
-### `useConditionalPayment()`
-Reads from and writes to `ConditionalPayment.sol` instances:
-
-| Hook | Description |
-|------|-------------|
-| `usePaymentData(address)` | Multi-read: status, amount, condition state |
-| `useExecutePayment(address)` | Calls `execute()` to trigger payment |
-| `useRefundPayment(address)` | Calls `refund()` to get funds back |
-| `useApproveManual(address)` | Approves a manual payment |
-| `useCheckCondition(address)` | Checks if condition is met |
+| Hook | Purpose |
+|------|---------|
+| `useCreateTimestampPayment()` | Create time-based payment |
+| `useCreateManualPayment()` | Create manual approval payment |
+| `useCreateRecurringPayment()` | Create recurring payment |
+| `useUserPayments(address)` | Fetch payment IDs for a user |
+| `useConditionalPayment(address)` | Read payment state (sender, recipient, amount, status) |
+| `useExecutePayment()` | Execute payment (trigger release) |
+| `useRefundPayment()` | Refund payment (retrieve funds) |
+| `useApprovePayment()` | Approve manual payment |
 
 ---
 
 ## ⚙️ Configuration
 
-### Contract Addresses
-
-Update `frontend/lib/constants.ts` with deployed addresses:
-
-```typescript
-export const CONTRACTS = {
-  PaymentFactory: {
-    celoAlfajores: '0x...',
-    celoMainnet: '0x...'
-  }
-} as const;
-```
-
 ### Networks
 
-Supported networks in `wagmi.ts`:
-- **Celo Alfajores** (testnet)
-- **Celo Mainnet** (production)
+`lib/constants.ts` defines Celo networks:
+
+```typescript
+export const CELO_MAINNET = { chainId: 42220, /* ... */ }
+export const CELO_ALFAJORES = { chainId: 44787, /* ... */ }
+```
+
+### Contract Addresses
+
+Update `lib/constants.ts`:
+
+```typescript
+export const PAYMENT_FACTORY_ADDRESS = "0x8D6259A4138032Df3FB6594012ff38Db1d1aB96c"
+```
 
 ---
 
@@ -160,8 +128,9 @@ Supported networks in `wagmi.ts`:
 # Install dependencies
 npm install
 
-# Run dev server
+# Run development server
 npm run dev
+# → http://localhost:3000
 
 # Build for production
 npm run build
@@ -172,20 +141,35 @@ npm run lint
 
 ### Environment Variables
 
-Create `.env.local`:
+Copy `.env.example` to `.env.local` and configure:
 
 ```env
-NEXT_PUBLIC_ALCHEMY_API_KEY=your_alchemy_key
-NEXT_PUBLIC_INFURA_KEY=your_infura_key
+NEXT_PUBLIC_REOWN_PROJECT_ID=your_project_id_here
 ```
+
+Get a Project ID from [Reown Cloud](https://cloud.reown.com).
+
+---
+
+## 📡 Network Setup
+
+The app is configured for **Celo** using Reown AppKit networks. Ensure `Web3Provider.tsx` references:
+
+```typescript
+import { celo, celoAlfajores } from '@reown/appkit/networks'
+networks: [celo, celoAlfajores],
+```
+
+RPC URLs are configured in `hardhat.config.ts` for the smart contracts and consumed via public endpoints in the frontend.
 
 ---
 
 ## 🔗 Links
 
 - [Live Miniapp](https://paywhen.vercel.app/)
-- [GitHub Repository](https://github.com/BitBand-Labs/paywhen)
-- [Smart Contracts](https://github.com/BitBand-Labs/paywhen/tree/main/smartcontract)
+- [GitHub Repository](https://github.com/thebabalola/paywhen)
+- [Smart Contracts](https://github.com/thebabalola/paywhen/tree/main/smartcontract)
+- [PaymentFactory on Celoscan](https://celoscan.io/address/0x8D6259A4138032Df3FB6594012ff38Db1d1aB96c)
 - [Celo Alfajores Faucet](https://faucet.celo.org/alfajores)
 
 ---
@@ -193,3 +177,4 @@ NEXT_PUBLIC_INFURA_KEY=your_infura_key
 ## 📄 License
 
 MIT © PayWhen Protocol
+

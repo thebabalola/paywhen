@@ -4,7 +4,27 @@
 
 ![Solidity](https://img.shields.io/badge/Solidity-^0.8.20-363636?style=flat-square&logo=solidity)
 [![Hardhat](https://img.shields.io/badge/Hardhat-primary-FFF100?style=flat-square)](https://hardhat.org)
-[![Network](https://img.shields.io/badge/Celo-Alfajores-16D14E?style=flat-square&logo=celo)](https://celo.org)
+[## 🚀 Deployment
+
+### Celo Mainnet
+
+✅ **PaymentFactory deployed**
+- Address: `0x8D6259A4138032Df3FB6594012ff38Db1d1aB96c`
+- Verified: [celoscan.io](https://celoscan.io/address/0x8D6259A4138032Df3FB6594012ff38Db1d1aB96c#code)
+- Deploy tx: `0x...`
+
+### Deploy to Testnet (Alfajores)
+
+```bash
+cd smartcontract
+npx hardhat run scripts/deploy.ts --network celoAlfajores
+```
+
+### Verify Contracts
+
+```bash
+npx hardhat verify --network celo 0x8D6259A4138032Df3FB6594012ff38Db1d1aB96c
+```)
 [![Tests](https://img.shields.io/badge/Tests-passing-success?style=flat-square)](https://github.com/BitBand-Labs/paywhen)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 

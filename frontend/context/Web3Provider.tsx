@@ -3,7 +3,7 @@
 import React, { ReactNode } from 'react'
 import { createAppKit } from '@reown/appkit/react'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
-import { base, baseSepolia } from '@reown/appkit/networks'
+import { celo, celoAlfajores } from '@reown/appkit/networks'
 import { WagmiProvider } from 'wagmi'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
@@ -19,7 +19,7 @@ const metadata = {
 }
 
 const wagmiAdapter = new WagmiAdapter({
-  networks: [base, baseSepolia],
+  networks: [celo, celoAlfajores],
   projectId,
   ssr: true,
 })
@@ -27,8 +27,8 @@ const wagmiAdapter = new WagmiAdapter({
 // Called unconditionally at module level — mirrors AION pattern so useAppKit always works
 createAppKit({
   adapters: [wagmiAdapter],
-  networks: [base, baseSepolia],
-  defaultNetwork: base,
+  networks: [celo, celoAlfajores],
+  defaultNetwork: celo,
   projectId,
   metadata,
   features: {

@@ -165,7 +165,23 @@ npm run build
 
 ### Configuration
 
-Update contract addresses in `frontend/config/contracts.ts` after deployment.
+Contract addresses are configured in `frontend/lib/constants.ts`:
+
+```typescript
+export const PAYMENT_FACTORY_ADDRESS = "0x8D6259A4138032Df3FB6594012ff38Db1d1aB96c" // Celo Mainnet
+```
+
+### Deployed Addresses
+
+| Network | PaymentFactory | Block Explorer |
+|---------|---------------|----------------|
+| Celo Mainnet | `0x8D6259A4138032Df3FB6594012ff38Db1d1aB96c` | [celoscan.io](https://celoscan.io/address/0x8D6259A4138032Df3FB6594012ff38Db1d1aB96c) |
+| Celo Alfajores | *(deploy when ready)* | — |
+
+To deploy to Alfajores testnet:
+```bash
+npx hardhat run scripts/deploy.ts --network celoAlfajores
+```
 
 ---
 

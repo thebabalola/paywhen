@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAccount } from "wagmi";
-import ThemeToggle from "./ThemeToggle";
+import { useMiniPay } from "@/hooks/useMiniPay";
 
 export default function Navbar() {
   const pathname = usePathname();
   const { isConnected } = useAccount();
+  const { isMiniPay } = useMiniPay();
 
   return (
     <header
@@ -28,8 +28,13 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Right: theme toggle */}
-        <div className="flex items-center gap-3">
+        {/* Right: wallet + theme */}
+        <div className="flex items-center gap-4">
+          {!isMiniPay && (
+            <div className="scale-90 sm:scale-100">
+              <appkit-button />
+            </div>
+          )}
           <ThemeToggle />
         </div>
       </div>

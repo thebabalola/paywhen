@@ -26,21 +26,19 @@ export const metadata: Metadata = {
     description:
       "Intent-based conditional payments with on-chain escrow and automatic execution.",
     siteName: "PayWhen",
-    images: [
-      { url: "/paywhen.svg", width: 44, height: 44, alt: "PayWhen Logo" },
-    ],
+      { url: "/paywhen-logo.png", width: 512, height: 512, alt: "PayWhen Logo" },
   },
   twitter: {
     card: "summary",
     title: "PayWhen — Conditional Payments",
     description:
       "PayWhen: Define conditions, hold in escrow, automatic execution.",
-    images: ["/paywhen.svg"],
+    images: ["/paywhen-logo.png"],
   },
   icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
-    apple: "/paywhen.svg",
+    icon: "/paywhen-logo.png",
+    shortcut: "/paywhen-logo.png",
+    apple: "/paywhen-logo.png",
   },
   robots: { index: true, follow: true },
   // THIS IS THE FIX: Moving the verification into the metadata object

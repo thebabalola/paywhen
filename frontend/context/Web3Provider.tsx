@@ -15,7 +15,7 @@ const metadata = {
   name: 'PayWhen',
   description: 'Conditional payment protocol for on-chain escrow and automatic execution',
   url: 'https://paywhen.vercel.app',
-  icons: ['/paywhen.svg'],
+  icons: ['/paywhen-logo.png'],
 }
 
 const wagmiAdapter = new WagmiAdapter({

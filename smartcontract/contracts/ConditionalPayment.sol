@@ -104,9 +104,9 @@ contract ConditionalPayment {
 
         if (conditionType == ConditionType.RECURRING) {
             executedCount++;
+            startTime += interval;
             if (occurrences == 0 || executedCount < occurrences) {
                 executed = false;
-                startTime += interval;
             }
         }
 

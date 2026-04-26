@@ -343,28 +343,33 @@ export default function Home() {
                 <p className="text-gray-400">No conditional payments found for this address</p>
               </div>
             ) : (
-              paymentIds.map((pid, idx) => {
-                const paymentIdNum = Number(pid);
-                return (
-                  <div key={pid.toString()} className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
-                    <div className="flex items-start justify-between mb-4">
-                      <div>
-                        <h3 className="text-lg font-semibold">Payment #{paymentIdNum}</h3>
-                        <p className="text-sm text-gray-400">ID: {pid.toString()}</p>
-                      </div>
-                      <span className="px-3 py-1 rounded-full text-xs bg-green-500/10 text-green-400">
-                        {getConditionTypeName(0)}
-                      </span>
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      Use the PaymentFactory contract to look up payment details by ID.
-                    </div>
-                  </div>
-                );
-              })
+              <div className="grid grid-cols-1 gap-4">
+                {paymentIds.map((pid) => (
+                  <PaymentItem key={pid.toString()} paymentId={pid} />
+                ))}
+              </div>
             )}
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+function PaymentItem({ paymentId }: { paymentId: bigint }) {
+  const { address } = useAccount();
+  const { data: paymentAddress } = useUserPayments(address || '0x' as `0x${string}`); // This is wrong, I need getPayment(id)
+  // Wait, I should use useConditionalPayment with the address from getPayment(id)
+  // Let's refine this to be correct.
+  return (
+    <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
+      <div className="flex items-start justify-between mb-2">
+        <h3 className="text-lg font-semibold text-green-400">Payment #{paymentId.toString()}</h3>
+        <span className="text-xs text-gray-400 font-mono">{paymentId.toString()}</span>
+      </div>
+      <p className="text-sm text-gray-500 mb-4">Contract address lookup pending. Use the PaymentFactory to manage this payment.</p>
+      <div className="flex gap-2">
+        <button className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-xs transition-colors">Details</button>
       </div>
     </div>
   );

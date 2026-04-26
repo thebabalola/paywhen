@@ -18,12 +18,13 @@ export default function Navbar() {
 
         {/* Logo + Wordmark */}
         <Link href="/" className="flex items-center gap-3 shrink-0 group">
+          <img src="/paywhen.svg" alt="PayWhen Logo" className="w-8 h-8 group-hover:scale-110 transition-transform" />
           <span
             style={{ letterSpacing: "0.16em", lineHeight: 1 }}
-            className="text-2xl font-black uppercase"
+            className="text-2xl font-black uppercase hidden sm:block"
           >
-            <span style={{ color: "var(--primary)" }}>PAY</span>
-            <span style={{ color: "var(--foreground-muted)" }} className="mx-1.5">WHEN</span>
+            <span className="text-primary">PAY</span>
+            <span className="text-foreground-muted mx-1.5">WHEN</span>
           </span>
         </Link>
 

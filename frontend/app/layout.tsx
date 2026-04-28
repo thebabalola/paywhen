@@ -26,19 +26,21 @@ export const metadata: Metadata = {
     description:
       "Intent-based conditional payments with on-chain escrow and automatic execution.",
     siteName: "PayWhen",
-      { url: "/paywhen-logo.png", width: 512, height: 512, alt: "PayWhen Logo" },
+    images: [
+      { url: "/paywhen.svg", width: 44, height: 44, alt: "PayWhen Logo" },
+    ],
   },
   twitter: {
     card: "summary",
     title: "PayWhen — Conditional Payments",
     description:
       "PayWhen: Define conditions, hold in escrow, automatic execution.",
-    images: ["/paywhen-logo.png"],
+    images: ["/paywhen.svg"],
   },
   icons: {
-    icon: "/paywhen-logo.png",
-    shortcut: "/paywhen-logo.png",
-    apple: "/paywhen-logo.png",
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/paywhen.svg",
   },
   robots: { index: true, follow: true },
   // THIS IS THE FIX: Moving the verification into the metadata object
@@ -64,8 +66,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="antialiased">
+      <body className="antialiased bg-black selection:bg-green-500/30">
         <Web3Provider>
+          <Navbar />
           <ClientLayout>{children}</ClientLayout>
         </Web3Provider>
       </body>

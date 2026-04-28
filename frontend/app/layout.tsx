@@ -28,19 +28,19 @@ export const metadata: Metadata = {
       "Intent-based conditional payments with on-chain escrow and automatic execution.",
     siteName: "PayWhen",
     images: [
-      { url: "/paywhen.svg", width: 44, height: 44, alt: "PayWhen Logo" },
+      { url: "/paywhen-banner.png", width: 1200, height: 630, alt: "PayWhen Banner" },
     ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "PayWhen — Conditional Payments",
     description:
       "PayWhen: Define conditions, hold in escrow, automatic execution.",
-    images: ["/paywhen.svg"],
+    images: ["/paywhen-banner.png"],
   },
   icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
+    icon: "/paywhen.svg",
+    shortcut: "/paywhen.svg",
     apple: "/paywhen.svg",
   },
   robots: { index: true, follow: true },

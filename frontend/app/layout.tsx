@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Web3Provider from "@/context/Web3Provider";
 import ClientLayout from "@/components/ClientLayout";
+import Navbar from "@/components/Navbar";
 
 export const metadata: Metadata = {
   title: {

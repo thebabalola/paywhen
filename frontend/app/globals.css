@@ -1,182 +1,51 @@
 @import "tailwindcss";
 
-/* ─── PayWhen Design Tokens — Dark (default) ───────────────────── */
-/* Deep Green Background: Trust, finance, Celo-native feel */
-/* Primary Celo Green: #35D07F for brand identity (logo, "When" text) */
-/* Celo Yellow: #F7E733 for emphasis (wallet, condition highlights) */
-:root,
-[data-theme="dark"] {
-  --background:      #022D2B;
-  --surface:         #0A1E1D;
-  --card:            #0F2D2C;
-  --card-hover:      #133836;
-  --border:          #1A4D4A;
-  --border-strong:   #206662;
-  --primary:         #35D07F;  /* Celo Green - brand identity */
-  --primary-hover:   #5EE8A0;
-  --primary-dark:    #0F766E;
-  --primary-muted:   rgba(53,208,127,0.12);
-  --primary-glow:    rgba(53,208,127,0.20);
-  --accent:          #F7E733;  /* Celo Yellow - emphasis only */
-  --foreground:      #E5E7EB;  /* Light gray text */
-  --foreground-muted:#6B8D8A;
-  --foreground-dim:  #3A5A56;
-  --success:         #35D07F;
-  --warning:         #F7E733;
-  --error:           #EF4444;
-  --teal-muted:      rgba(15,118,110,0.3);
+@theme {
+  --color-background: #050505;
+  --color-foreground: #ffffff;
+  
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
 }
 
-/* ─── PayWhen Design Tokens — Light ───────────────────────────── */
-[data-theme="light"] {
-  --background:      #F0F7F6;
-  --surface:         #FFFFFF;
-  --card:            #FFFFFF;
-  --card-hover:      #F4F9F8;
-  --border:          #D1E8E8;
-  --border-strong:   #A8D8D4;
-  --primary:         #059669;  /* Dark celo green for light mode */
-  --primary-hover:   #047857;
-  --primary-dark:    #0F766E;
-  --primary-muted:   rgba(5,150,105,0.10);
-  --primary-glow:    rgba(5,150,105,0.15);
-  --accent:          #FACC15;  /* Yellow for highlights */
-  --foreground:      #111827;
-  --foreground-muted:#6B7280;
-  --foreground-dim:  #9CA3AF;
-  --success:         #059669;
-  --warning:         #D97706;
-  --error:           #DC2626;
-  --teal-muted:      rgba(15,118,110,0.12);
+@layer base {
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
 }
 
-@theme inline {
-  --color-background:       var(--background);
-  --color-surface:          var(--surface);
-  --color-card:             var(--card);
-  --color-border:           var(--border);
-  --color-primary:          var(--primary);
-  --color-foreground:       var(--foreground);
-  --color-foreground-muted: var(--foreground-muted);
-  --color-accent:           var(--accent);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@layer utilities {
+  .glass {
+    @apply bg-white/[0.03] backdrop-blur-xl border border-white/10;
+  }
+  
+  .glass-hover {
+    @apply hover:bg-white/[0.05] hover:border-white/20 transition-all duration-300;
+  }
+  
+  .text-gradient {
+    @apply bg-gradient-to-r from-green-400 to-emerald-300 bg-clip-text text-transparent;
+  }
 }
 
-*,*::before,*::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans, 'Inter', system-ui, sans-serif);
-  -webkit-font-smoothing: antialiased;
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
 }
 
-.card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  transition: border-color 220ms ease, transform 220ms ease;
-}
-.card:hover { border-color: var(--border-strong); transform: translateY(-2px); }
-.card-interactive:hover { border-color: var(--primary-dark); }
-
-.label {
-  font-size: 10px; font-weight: 700;
-  letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--foreground-muted);
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-.pill {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 4px 12px; border-radius: 999px;
-  font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
-}
-.pill-primary {
-  background: var(--primary-muted); color: var(--primary-hover);
-  border: 1px solid rgba(143,168,40,0.22);
-}
-.pill-accent {
-  background: rgba(200,191,162,0.08); color: var(--accent);
-  border: 1px solid rgba(200,191,162,0.15);
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 5px;
 }
 
-.btn {
-  display: inline-flex; align-items: center; justify-content: center;
-  gap: 8px; padding: 10px 22px; border-radius: 10px;
-  font-weight: 700; font-size: 14px; cursor: pointer;
-  transition: all 180ms ease; border: 1px solid transparent;
-}
-.btn-primary { background: var(--primary); color: var(--background); border-color: var(--primary); }
-.btn-primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
-.btn-outline { background: transparent; color: var(--foreground); border-color: var(--border-strong); }
-.btn-outline:hover { background: var(--card); border-color: var(--primary-dark); color: var(--primary-hover); }
-.btn-ghost { background: transparent; color: var(--foreground-muted); }
-.btn-ghost:hover { color: var(--foreground); background: var(--card); }
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(24px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-@keyframes fade-up {
-  from { opacity: 0; transform: translateY(18px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
-@keyframes float {
-  0%,100% { transform: translateY(0px); }
-  50%     { transform: translateY(-8px); }
-}
-@keyframes float-alt {
-  0%,100% { transform: translateY(0px) rotate(1deg); }
-  50%     { transform: translateY(-6px) rotate(-1deg); }
-}
-@keyframes pulse-olive {
-  0%,100% { opacity: 1; } 50% { opacity: 0.5; }
-}
-@keyframes skeleton-shimmer {
-  0%   { background-position: -400px 0; }
-  100% { background-position:  400px 0; }
-}
-@keyframes ticker-up {
-  from { transform: translateY(100%); opacity: 0; }
-  to   { transform: translateY(0); opacity: 1; }
-}
-
-.animate-fade-up     { animation: fade-up   0.5s cubic-bezier(0.22,1,0.36,1) both; }
-.animate-fade-in     { animation: fade-in   0.4s ease both; }
-.animate-float       { animation: float     3.5s ease-in-out infinite; }
-.animate-float-alt   { animation: float-alt 4.2s ease-in-out infinite; }
-.animate-pulse-olive { animation: pulse-olive 2s ease-in-out infinite; }
-.animate-ticker-up   { animation: ticker-up  0.3s ease both; }
-
-.delay-100 { animation-delay: 0.10s; }
-.delay-200 { animation-delay: 0.20s; }
-.delay-300 { animation-delay: 0.30s; }
-.delay-400 { animation-delay: 0.40s; }
-.delay-500 { animation-delay: 0.50s; }
-
-.skeleton {
-  background: linear-gradient(90deg, var(--card) 25%, var(--surface) 50%, var(--card) 75%);
-  background-size: 400px 100%;
-  animation: skeleton-shimmer 1.4s ease-in-out infinite;
-  border-radius: 8px;
-}
-
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: var(--background); }
-::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
-
-.btn-retro {
-  background: #3b82f6;
-  color: white;
-  border: 2px solid #2563eb;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-family: inherit;
-}
-.btn-retro:hover {
-  background: #2563eb;
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.1);
 }

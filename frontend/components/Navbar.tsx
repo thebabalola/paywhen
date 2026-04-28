@@ -1,45 +1,36 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useAccount } from "wagmi";
-import { useMiniPay } from "@/hooks/useMiniPay";
-import ThemeToggle from "./ThemeToggle";
+import { motion } from "framer-motion";
+import { ShieldCheck } from "lucide-react";
 
 export default function Navbar() {
-  const pathname = usePathname();
-  const { isConnected } = useAccount();
-  const { isMiniPay } = useMiniPay();
-
   return (
-    <header
-      style={{ background: "color-mix(in srgb, var(--background) 80%, transparent)", borderBottom: "1px solid var(--border)" }}
-      className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl"
-    >
-      <div className="max-w-7xl mx-auto px-5 h-20 flex items-center justify-between gap-6">
-
-        {/* Logo + Wordmark */}
-        <Link href="/" className="flex items-center gap-3 shrink-0 group">
-          <img src="/paywhen.svg" alt="PayWhen Logo" className="w-8 h-8 group-hover:scale-110 transition-transform" />
-          <span
-            style={{ letterSpacing: "0.16em", lineHeight: 1 }}
-            className="text-2xl font-black uppercase hidden sm:block"
-          >
-            <span className="text-primary">PAY</span>
-            <span className="text-foreground-muted mx-1.5">WHEN</span>
+    <header className="fixed top-0 left-0 right-0 z-50 px-6 py-4">
+      <motion.div 
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="max-w-7xl mx-auto flex items-center justify-between bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-2xl px-6 py-3 shadow-2xl"
+      >
+        <Link href="/" className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-emerald-600 rounded-lg flex items-center justify-center shadow-lg shadow-green-500/20">
+            <ShieldCheck size={18} className="text-black" />
+          </div>
+          <span className="text-xl font-black tracking-tight bg-gradient-to-r from-green-400 to-emerald-300 bg-clip-text text-transparent">
+            PayWhen
           </span>
         </Link>
 
-        {/* Right: wallet + theme */}
+        <nav className="hidden md:flex items-center gap-8 text-[11px] font-black uppercase tracking-[0.2em] text-gray-500">
+          <Link href="/" className="hover:text-green-400 transition-colors">Create</Link>
+          <Link href="/" className="hover:text-green-400 transition-colors">Dashboard</Link>
+          <Link href="/" className="hover:text-green-400 transition-colors">Protocol</Link>
+        </nav>
+
         <div className="flex items-center gap-4">
-          {!isMiniPay && (
-            <div className="scale-90 sm:scale-100">
-              <appkit-button />
-            </div>
-          )}
-          <ThemeToggle />
+          <appkit-button />
         </div>
-      </div>
+      </motion.div>
     </header>
   );
 }

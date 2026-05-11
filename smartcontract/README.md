@@ -4,14 +4,20 @@
 
 ![Solidity](https://img.shields.io/badge/Solidity-^0.8.20-363636?style=flat-square&logo=solidity)
 [![Hardhat](https://img.shields.io/badge/Hardhat-primary-FFF100?style=flat-square)](https://hardhat.org)
-[## 🚀 Deployment
+[![Tests](https://img.shields.io/badge/Tests-passing-success?style=flat-square)](https://github.com/BitBand-Labs/paywhen)
+[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
+
+Solidity smart contracts for the PayWhen intent-based payment protocol. Conditional escrow payments with time-based, manual, and oracle-triggered execution.
+
+---
+
+## 🚀 Deployment
 
 ### Celo Mainnet
 
 ✅ **PaymentFactory deployed**
 - Address: `0x8D6259A4138032Df3FB6594012ff38Db1d1aB96c`
 - Verified: [celoscan.io](https://celoscan.io/address/0x8D6259A4138032Df3FB6594012ff38Db1d1aB96c#code)
-- Deploy tx: `0x...`
 
 ### Deploy to Testnet (Alfajores)
 
@@ -24,11 +30,7 @@ npx hardhat run scripts/deploy.ts --network celoAlfajores
 
 ```bash
 npx hardhat verify --network celo 0x8D6259A4138032Df3FB6594012ff38Db1d1aB96c
-```)
-[![Tests](https://img.shields.io/badge/Tests-passing-success?style=flat-square)](https://github.com/BitBand-Labs/paywhen)
-[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
-
-Solidity smart contracts for the PayWhen intent-based payment protocol. Conditional escrow payments with time-based, manual, and oracle-triggered execution.
+```
 
 ---
 

@@ -7,16 +7,15 @@
     "compile": "hardhat compile",
     "test": "hardhat test",
     "test:coverage": "hardhat coverage",
-    "deploy:base": "hardhat run scripts/deploy.js --network base",
-    "verify": "hardhat verify --network base",
+    "deploy:celo": "hardhat run scripts/deploy.js --network celo",
+    "verify:celo": "hardhat verify --network celo",
     "lint": "eslint .",
     "format": "prettier --write \"**/*.{js,ts,sol}\""
   },
   "keywords": [
     "defi",
     "vault",
-    "erc4626",
-    "base",
+    "celo",
     "solidity",
     "hardhat"
   ],

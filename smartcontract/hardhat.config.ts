@@ -53,7 +53,7 @@ const config: HardhatUserConfig = {
       },
     ],
   },
-  // Primary deployment target: Base Mainnet
+  // Primary deployment target: Celo Mainnet
   defaultNetwork: "hardhat",
   networks: {
     // View the networks that are pre-configured.

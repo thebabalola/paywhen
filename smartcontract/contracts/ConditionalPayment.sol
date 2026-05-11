@@ -1,14 +1,26 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-// ConditionalPayment
-// Escrow contract for conditional payments
-// Holds funds in escrow and executes when conditions are met
-contract ConditionalPayment {
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+
+/**
+ * @title ConditionalPayment
+ * @dev Escrow contract for conditional payments with Goal and Split support.
+ * Supports both Native (CELO) and ERC20 (cUSD) tokens.
+ */
+contract ConditionalPayment is ReentrancyGuard {
+    using SafeERC20 for IERC20;
+
     address public immutable sender;
     address public immutable recipient;
-    uint256 public immutable amount;
+    address public immutable token; // address(0) for native CELO
+    uint256 public immutable totalAmount;
+    uint256 public immutable immediateAmount;
+    uint256 public immutable lockedAmount;
     uint256 public immutable createdAt;
+    string public goal;
 
     enum ConditionType {
         TIMESTAMP,
@@ -19,10 +31,11 @@ contract ConditionalPayment {
 
     ConditionType public immutable conditionType;
 
-    bool public executed;
+    bool public immediateExecuted;
+    bool public lockedExecuted;
     bool public refunded;
 
-    // Condition data (packed for gas efficiency)
+    // Condition data
     uint256 public executeAt;      // For TIMESTAMP
     uint256 public startTime;      // For RECURRING
     uint256 public interval;       // For RECURRING
@@ -36,31 +49,38 @@ contract ConditionalPayment {
 
     uint256 public constant REFUND_TIMEOUT = 30 days;
 
-    // Emitted when a payment is executed
-    event PaymentExecuted(address indexed paymentAddress, address recipient, uint256 amount);
-
-    // Emitted when a payment is refunded
+    event PaymentExecuted(address indexed paymentAddress, address recipient, uint256 amount, bool isImmediate);
     event PaymentRefunded(address indexed paymentAddress, address sender, uint256 amount);
-
-    // Emitted when a manual payment is approved
     event ManualApproval(address indexed approver, address indexed paymentAddress);
 
     constructor(
         address _sender,
         address _recipient,
-        uint256 _amount,
+        address _token,
+        uint256 _totalAmount,
+        uint256 _immediateAmount,
+        string memory _goal,
         uint8 _conditionType,
         bytes memory _conditionData
     ) payable {
         require(_sender != address(0), "Invalid sender");
         require(_recipient != address(0), "Invalid recipient");
-        require(_amount > 0, "Amount must be > 0");
-        require(msg.value == _amount, "Value mismatch");
-        require(_conditionType <= uint8(ConditionType.ORACLE), "Invalid condition type");
+        require(_totalAmount > 0, "Amount must be > 0");
+        require(_immediateAmount <= _totalAmount, "Invalid split");
+        
+        if (_token == address(0)) {
+            require(msg.value == _totalAmount, "Value mismatch");
+        } else {
+            require(msg.value == 0, "Native value with ERC20");
+        }
 
         sender = _sender;
         recipient = _recipient;
-        amount = _amount;
+        token = _token;
+        totalAmount = _totalAmount;
+        immediateAmount = _immediateAmount;
+        lockedAmount = _totalAmount - _immediateAmount;
+        goal = _goal;
         createdAt = block.timestamp;
         conditionType = ConditionType(_conditionType);
 
@@ -71,7 +91,6 @@ contract ConditionalPayment {
         if (conditionType == ConditionType.TIMESTAMP) {
             executeAt = abi.decode(_conditionData, (uint256));
             require(executeAt > block.timestamp, "Timestamp must be future");
-            require(executeAt <= block.timestamp + 365 days, "Too far future");
         } else if (conditionType == ConditionType.MANUAL) {
             (address[] memory _approvers, uint256 _required) = abi.decode(
                 _conditionData,
@@ -87,55 +106,72 @@ contract ConditionalPayment {
                 (uint256, uint256, uint256)
             );
             require(_start >= block.timestamp, "Start in past");
-            require(_interval >= 1 days && _interval <= 365 days, "Invalid interval");
+            require(_interval >= 1 days, "Invalid interval");
             startTime = _start;
             interval = _interval;
             occurrences = _occurrences;
-            executedCount = 0;
         }
     }
 
-    function execute() external {
-        require(!executed, "Already executed");
+    /**
+     * @dev Release the immediate portion of the split.
+     */
+    function executeImmediate() external nonReentrant {
+        require(!immediateExecuted, "Immediate already executed");
+        require(!refunded, "Already refunded");
+        require(immediateAmount > 0, "No immediate amount");
+
+        immediateExecuted = true;
+        _transfer(recipient, immediateAmount);
+        emit PaymentExecuted(address(this), recipient, immediateAmount, true);
+    }
+
+    /**
+     * @dev Release the locked portion if conditions are met.
+     */
+    function executeLocked() external nonReentrant {
+        require(!lockedExecuted, "Locked already executed");
         require(!refunded, "Already refunded");
         require(_checkCondition(), "Condition not met");
 
-        executed = true;
-
         if (conditionType == ConditionType.RECURRING) {
+            uint256 perOccurrenceAmount = lockedAmount / (occurrences == 0 ? 1 : occurrences);
+            require(perOccurrenceAmount > 0, "Recurring amount too small");
+            
             executedCount++;
             startTime += interval;
-            if (occurrences == 0 || executedCount < occurrences) {
-                executed = false;
+            
+            if (occurrences > 0 && executedCount >= occurrences) {
+                lockedExecuted = true;
             }
+            _transfer(recipient, perOccurrenceAmount);
+            emit PaymentExecuted(address(this), recipient, perOccurrenceAmount, false);
+        } else {
+            lockedExecuted = true;
+            _transfer(recipient, lockedAmount);
+            emit PaymentExecuted(address(this), recipient, lockedAmount, false);
         }
-
-        (bool success, ) = recipient.call{value: amount}("");
-        require(success, "Transfer failed");
-        emit PaymentExecuted(address(this), recipient, amount);
     }
 
-    function refund() external {
-        require(!executed, "Already executed");
+    function refund() external nonReentrant {
         require(!refunded, "Already refunded");
-        require(
-            msg.sender == sender ||
-            (conditionType == ConditionType.TIMESTAMP && block.timestamp > createdAt + REFUND_TIMEOUT) ||
-            (conditionType == ConditionType.MANUAL && _isRefundTimeElapsed()),
-            "Refund not available"
-        );
+        require(msg.sender == sender || _isExpired(), "Refund not available");
+        
+        uint256 balance = _currentBalance();
+        require(balance > 0, "No balance to refund");
+
         refunded = true;
-        (bool success, ) = sender.call{value: amount}("");
-        require(success, "Transfer failed");
-        emit PaymentRefunded(address(this), sender, amount);
+        _transfer(sender, balance);
+        emit PaymentRefunded(address(this), sender, balance);
     }
 
     function approveManual() external {
         require(conditionType == ConditionType.MANUAL, "Not manual payment");
-        require(!executed, "Already executed");
+        require(!lockedExecuted, "Already executed");
         require(!refunded, "Already refunded");
         require(_isApprover(msg.sender), "Not an approver");
         require(!approvedBy[msg.sender], "Already approved");
+        
         approvedBy[msg.sender] = true;
         emit ManualApproval(msg.sender, address(this));
     }
@@ -146,14 +182,30 @@ contract ConditionalPayment {
         } else if (conditionType == ConditionType.MANUAL) {
             return _getApprovalCount() >= requiredApprovals;
         } else if (conditionType == ConditionType.RECURRING) {
-            return block.timestamp >= startTime &&
-                   (occurrences == 0 || executedCount < occurrences);
+            return block.timestamp >= startTime && (occurrences == 0 || executedCount < occurrences);
         }
         return false;
     }
 
-    function _isRefundTimeElapsed() internal view returns (bool) {
-        return block.timestamp > createdAt + 7 days;
+    function _isExpired() internal view returns (bool) {
+        return block.timestamp > createdAt + REFUND_TIMEOUT;
+    }
+
+    function _transfer(address _to, uint256 _amount) internal {
+        if (token == address(0)) {
+            (bool success, ) = _to.call{value: _amount}("");
+            require(success, "Native transfer failed");
+        } else {
+            IERC20(token).safeTransfer(_to, _amount);
+        }
+    }
+
+    function _currentBalance() internal view returns (uint256) {
+        if (token == address(0)) {
+            return address(this).balance;
+        } else {
+            return IERC20(token).balanceOf(address(this));
+        }
     }
 
     function _getApprovalCount() internal view returns (uint256) {
@@ -171,47 +223,21 @@ contract ConditionalPayment {
         return false;
     }
 
+    // View functions
     function checkCondition() external view returns (bool) {
         return _checkCondition();
     }
 
-    function getApprovalCount() external view returns (uint256) {
-        return _getApprovalCount();
-    }
-
     function getStatus() external view returns (
-        address senderAddr,
-        address recipientAddr,
-        uint256 amount_,
-        bool executed_,
-        bool refunded_,
-        uint256 remainingTime
+        bool _immediateExecuted,
+        bool _lockedExecuted,
+        bool _refunded,
+        uint256 _balance
     ) {
-        senderAddr = sender;
-        recipientAddr = recipient;
-        amount_ = amount;
-        executed_ = executed;
-        refunded_ = refunded;
-        if (conditionType == ConditionType.TIMESTAMP && !executed) {
-            remainingTime = executeAt > block.timestamp ? executeAt - block.timestamp : 0;
-        }
-    }
-
-    function getRecurringInfo() external view returns (
-        uint256 nextExecution,
-        uint256 remainingOccurrences
-    ) {
-        if (conditionType == ConditionType.RECURRING) {
-            nextExecution = startTime;
-            remainingOccurrences = occurrences == 0 ? type(uint256).max : occurrences - executedCount;
-        }
-    }
-
-    function getApprovers() external view returns (address[] memory) {
-        return approvers;
+        return (immediateExecuted, lockedExecuted, refunded, _currentBalance());
     }
 
     receive() external payable {
-        revert("Use create functions");
+        require(token == address(0), "Only native");
     }
 }

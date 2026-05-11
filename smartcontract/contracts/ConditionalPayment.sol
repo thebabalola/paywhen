@@ -4,6 +4,7 @@ pragma solidity ^0.8.20;
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {IConditionOracle} from "./IConditionOracle.sol";
 
 /**
  * @title ConditionalPayment
@@ -41,6 +42,10 @@ contract ConditionalPayment is ReentrancyGuard {
     uint256 public interval;       // For RECURRING
     uint256 public occurrences;    // For RECURRING
     uint256 public executedCount;  // For RECURRING
+
+    // Oracle data
+    address public oracleAddress;  // For ORACLE
+    bytes public oracleData;       // For ORACLE
 
     // Manual approval tracking
     mapping(address => bool) public approvedBy;
@@ -110,6 +115,11 @@ contract ConditionalPayment is ReentrancyGuard {
             startTime = _start;
             interval = _interval;
             occurrences = _occurrences;
+        } else if (conditionType == ConditionType.ORACLE) {
+            (address _oracle, bytes memory _data) = abi.decode(_conditionData, (address, bytes));
+            require(_oracle != address(0), "Invalid oracle address");
+            oracleAddress = _oracle;
+            oracleData = _data;
         }
     }
 
@@ -183,6 +193,8 @@ contract ConditionalPayment is ReentrancyGuard {
             return _getApprovalCount() >= requiredApprovals;
         } else if (conditionType == ConditionType.RECURRING) {
             return block.timestamp >= startTime && (occurrences == 0 || executedCount < occurrences);
+        } else if (conditionType == ConditionType.ORACLE) {
+            return IConditionOracle(oracleAddress).isConditionMet(oracleData);
         }
         return false;
     }
@@ -234,7 +246,8 @@ contract ConditionalPayment is ReentrancyGuard {
         bool _refunded,
         uint256 _balance
     ) {
-        return (immediateExecuted, lockedExecuted, refunded, _currentBalance());
+        uint256 currentBalance = _currentBalance();
+        return (immediateExecuted, lockedExecuted, refunded, currentBalance);
     }
 
     receive() external payable {

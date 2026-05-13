@@ -43,6 +43,8 @@ contract ConditionalPayment is ReentrancyGuard {
     bytes public oracleData;       // For ORACLE
 
     // Manual approval tracking
+    mapping(address => bool) public approvedBy;
+    address[] public approvers;
     uint256 public requiredApprovals;
 
     // Growth Vault / Yield Integration (Placeholder for Phase 2)

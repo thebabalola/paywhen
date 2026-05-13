@@ -37,21 +37,25 @@ export default function Home() {
 
   // Form State
   const [recipient, setRecipient] = useState("");
-  const [amount, setAmount] = useState("");
+  const [totalAmount, setTotalAmount] = useState("");
+  const [immediatePercentage, setImmediatePercentage] = useState(50);
+  const [goal, setGoal] = useState("School Fees");
+  const [token, setToken] = useState("0x0000000000000000000000000000000000000000"); // Native CELO
   const [conditionType, setConditionType] = useState<ConditionType>(ConditionType.TIMESTAMP);
   const [executeAt, setExecuteAt] = useState("");
   const [approvers, setApprovers] = useState("");
   const [requiredApprovals, setRequiredApprovals] = useState("1");
-  const [startTime, setStartTime] = useState("");
-  const [interval, setInterval] = useState("");
-  const [occurrences, setOccurrences] = useState("");
 
   const { data: userPaymentsData, isLoading: loadingPayments } = useUserPayments(address || '0x');
   const createTimestamp = useCreateTimestampPayment();
   const createManual = useCreateManualPayment();
-  const createRecurring = useCreateRecurringPayment();
 
   const paymentIds = useMemo(() => (userPaymentsData as bigint[]) || [], [userPaymentsData]);
+
+  const immediateAmount = useMemo(() => {
+    if (!totalAmount) return "0";
+    return (parseFloat(totalAmount) * (immediatePercentage / 100)).toFixed(4);
+  }, [totalAmount, immediatePercentage]);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,27 +66,25 @@ export default function Home() {
         const timestamp = BigInt(Math.floor(new Date(executeAt).getTime() / 1000));
         await createTimestamp.createTimestampPayment({
           recipient: recipient as `0x${string}`,
-          amount,
+          token: token as `0x${string}`,
+          totalAmount,
+          immediateAmount,
+          goal,
           executeAt: timestamp,
         });
       } else if (conditionType === ConditionType.MANUAL) {
         const approverList = approvers.split(',').map(a => a.trim() as `0x${string}`).filter(a => a);
         await createManual.createManualPayment({
           recipient: recipient as `0x${string}`,
-          amount,
+          token: token as `0x${string}`,
+          totalAmount,
+          immediateAmount,
+          goal,
           approvers: approverList,
           requiredApprovals: BigInt(requiredApprovals || 1),
         });
-      } else if (conditionType === ConditionType.RECURRING) {
-        await createRecurring.createRecurringPayment({
-          recipient: recipient as `0x${string}`,
-          amount,
-          startTime: BigInt(Math.floor(new Date(startTime).getTime() / 1000)),
-          interval: BigInt(interval),
-          occurrences: BigInt(occurrences),
-        });
       }
-      setStatus({ type: 'success', message: 'Intent published to blockchain!' });
+      setStatus({ type: 'success', message: 'Remittance intent published!' });
     } catch (err: any) {
       setStatus({ type: 'error', message: err.message || 'Transaction failed' });
     }
@@ -104,13 +106,13 @@ export default function Home() {
           className="text-center mb-16"
         >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-xs font-bold tracking-widest uppercase mb-6">
-            <ShieldCheck size={14} /> Secure On-Chain Escrow
+            <ShieldCheck size={14} /> Programmable Purpose
           </div>
           <h1 className="text-6xl md:text-7xl font-black mb-6 tracking-tight">
-            Programmable <span className="bg-gradient-to-r from-green-400 to-emerald-300 bg-clip-text text-transparent italic">Payments</span>
+            Intent <span className="bg-gradient-to-r from-green-400 to-emerald-300 bg-clip-text text-transparent italic">Remit</span>
           </h1>
           <p className="text-gray-400 text-xl max-w-2xl mx-auto font-medium">
-            Define the conditions. Lock the funds. Automate the execution. PayWhen transforms user intent into enforceable smart contracts.
+            Send money with purpose. Define the goal, split the payout, and ensure your remittance builds long-term growth.
           </p>
         </motion.div>
 
@@ -123,7 +125,7 @@ export default function Home() {
               active={activeTab === 'create'} 
               onClick={() => setActiveTab('create')}
               icon={<Plus size={18} />}
-              label="Create Intent"
+              label="New Remittance"
             />
             <TabButton 
               active={activeTab === 'status'} 
@@ -147,8 +149,8 @@ export default function Home() {
                 >
                   <div className="flex items-center justify-between mb-8">
                     <div>
-                      <h2 className="text-2xl font-bold">New Payment Intent</h2>
-                      <p className="text-gray-500 text-sm">Configure your conditional execution rules</p>
+                      <h2 className="text-2xl font-bold">Create Intent</h2>
+                      <p className="text-gray-500 text-sm">Configure your purposeful transfer</p>
                     </div>
                     <div className="p-3 bg-green-500/10 rounded-2xl">
                       <Wallet className="text-green-400" />
@@ -156,6 +158,25 @@ export default function Home() {
                   </div>
 
                   <form onSubmit={handleCreate} className="space-y-8">
+                    {/* Goal Selection */}
+                    <div className="space-y-4">
+                      <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-1">Select Remittance Goal</label>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        {["School Fees", "Medical", "Rent", "Business"].map((g) => (
+                          <button
+                            key={g}
+                            type="button"
+                            onClick={() => setGoal(g)}
+                            className={`p-4 rounded-xl border text-sm font-bold transition-all ${
+                              goal === g ? 'bg-green-500/20 border-green-500/50 text-green-400' : 'bg-white/5 border-white/5 text-gray-500 hover:border-white/20'
+                            }`}
+                          >
+                            {g}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <FormInput 
                         label="Recipient Address" 
@@ -164,39 +185,70 @@ export default function Home() {
                         onChange={setRecipient}
                         icon={<ChevronRight size={16} className="text-gray-600" />}
                       />
-                      <FormInput 
-                        label="Amount (CELO)" 
-                        type="number" 
-                        placeholder="0.00" 
-                        value={amount} 
-                        onChange={setAmount}
-                        icon={<span className="text-[10px] font-bold text-gray-600">CELO</span>}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 ml-1">Asset & Total Amount</label>
+                        <div className="flex gap-2">
+                          <select 
+                            value={token} 
+                            onChange={(e) => setToken(e.target.value)}
+                            className="bg-white/5 border border-white/10 rounded-xl px-3 text-xs outline-none"
+                          >
+                            <option value="0x0000000000000000000000000000000000000000">CELO</option>
+                            <option value="0x765DE816845861e75A25fCA122bb6898B8B1282a">cUSD</option>
+                          </select>
+                          <input 
+                            type="number" 
+                            placeholder="0.00" 
+                            value={totalAmount} 
+                            onChange={(e) => setTotalAmount(e.target.value)}
+                            className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Split Slider */}
+                    <div className="p-6 bg-white/[0.02] border border-white/5 rounded-2xl space-y-6">
+                      <div className="flex justify-between items-end">
+                        <div>
+                          <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">Immediate vs. Locked Split</label>
+                          <div className="text-2xl font-black text-green-400 mt-1">{immediatePercentage}% / {100 - immediatePercentage}%</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-[10px] font-black uppercase text-gray-500">Locked Amount</div>
+                          <div className="text-xl font-bold text-emerald-300">{(parseFloat(totalAmount || "0") - parseFloat(immediateAmount)).toFixed(4)}</div>
+                        </div>
+                      </div>
+                      <input 
+                        type="range" 
+                        min="0" 
+                        max="100" 
+                        value={immediatePercentage} 
+                        onChange={(e) => setImmediatePercentage(parseInt(e.target.value))}
+                        className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-green-500"
                       />
+                      <div className="flex justify-between text-[10px] font-bold text-gray-600 uppercase">
+                        <span>Recipient Gets Now: {immediateAmount}</span>
+                        <span>To Growth Vault: {(parseFloat(totalAmount || "0") - parseFloat(immediateAmount)).toFixed(4)}</span>
+                      </div>
                     </div>
 
                     <div className="space-y-4">
-                      <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-1">Execution Trigger</label>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-1">Lock Conditions</label>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <ConditionCard 
                           selected={conditionType === ConditionType.TIMESTAMP}
                           onClick={() => setConditionType(ConditionType.TIMESTAMP)}
                           icon={<Clock size={20} />}
-                          title="Time-Based"
-                          desc="Future date/time"
+                          title="Time-Locked"
+                          desc="Release on specific date"
                         />
                         <ConditionCard 
                           selected={conditionType === ConditionType.MANUAL}
                           onClick={() => setConditionType(ConditionType.MANUAL)}
                           icon={<UserCheck size={20} />}
-                          title="Manual"
-                          desc="Approver threshold"
-                        />
-                        <ConditionCard 
-                          selected={conditionType === ConditionType.RECURRING}
-                          onClick={() => setConditionType(ConditionType.RECURRING)}
-                          icon={<Repeat size={20} />}
-                          title="Recurring"
-                          desc="Scheduled interval"
+                          title="Manual Approval"
+                          desc="Multi-sig protection"
                         />
                       </div>
                     </div>
@@ -205,7 +257,7 @@ export default function Home() {
                     <div className="p-6 bg-white/[0.02] border border-white/5 rounded-2xl">
                       {conditionType === ConditionType.TIMESTAMP && (
                         <FormInput 
-                          label="Execute Date & Time" 
+                          label="Release Date & Time" 
                           type="datetime-local" 
                           value={executeAt} 
                           onChange={setExecuteAt}
@@ -227,13 +279,6 @@ export default function Home() {
                           />
                         </div>
                       )}
-                      {conditionType === ConditionType.RECURRING && (
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <FormInput label="Start" type="datetime-local" value={startTime} onChange={setStartTime} />
-                          <FormInput label="Interval (sec)" type="number" value={interval} onChange={setInterval} />
-                          <FormInput label="Occurrences" type="number" value={occurrences} onChange={setOccurrences} />
-                        </div>
-                      )}
                     </div>
 
                     <button
@@ -241,8 +286,8 @@ export default function Home() {
                       disabled={createTimestamp.isPending || !isConnected}
                       className="w-full h-14 bg-gradient-to-r from-green-500 to-emerald-400 hover:scale-[1.02] active:scale-[0.98] transition-all rounded-2xl font-bold text-black flex items-center justify-center gap-3 disabled:opacity-50 disabled:grayscale"
                     >
-                      {createTimestamp.isPending ? <Loader2 className="animate-spin" /> : <Plus size={20} />}
-                      {isConnected ? "Publish Intent" : "Connect Wallet to Start"}
+                      {createTimestamp.isPending ? <Loader2 className="animate-spin" /> : <ArrowRight size={20} />}
+                      {isConnected ? "Confirm Intent" : "Connect Wallet to Start"}
                     </button>
                   </form>
                 </motion.div>
@@ -258,7 +303,7 @@ export default function Home() {
                     <div className="bg-white/[0.03] border border-white/10 rounded-3xl p-20 text-center">
                       <Wallet size={48} className="mx-auto mb-6 text-gray-600" />
                       <h3 className="text-2xl font-bold mb-2">Wallet Disconnected</h3>
-                      <p className="text-gray-500 mb-8">Connect your wallet to manage your payment dashboard</p>
+                      <p className="text-gray-500 mb-8">Connect your wallet to manage your remittance intents</p>
                       <appkit-button />
                     </div>
                   ) : paymentIds.length === 0 ? (
@@ -267,12 +312,12 @@ export default function Home() {
                         <History size={32} className="text-green-500/50" />
                       </div>
                       <h3 className="text-2xl font-bold mb-2">No Active Intents</h3>
-                      <p className="text-gray-500 mb-8 text-lg">You haven't created any conditional payments yet.</p>
+                      <p className="text-gray-500 mb-8 text-lg">You haven't created any purposeful remittances yet.</p>
                       <button 
                         onClick={() => setActiveTab('create')}
                         className="px-8 py-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all font-bold"
                       >
-                        Create Your First Intent
+                        Send First Remittance
                       </button>
                     </div>
                   ) : (
@@ -357,7 +402,8 @@ function FormInput({ label, value, onChange, placeholder, type = "text", icon }:
 function PaymentItem({ paymentId }: { paymentId: bigint }) {
   const { data: address } = useGetPaymentAddress(paymentId);
   const payment = useConditionalPayment(address as `0x${string}`);
-  const execute = useExecutePayment();
+  const executeImmediate = useExecuteImmediate();
+  const executeLocked = useExecuteLocked();
   const refund = useRefundPayment();
   const approve = useApprovePayment();
 
@@ -375,7 +421,7 @@ function PaymentItem({ paymentId }: { paymentId: bigint }) {
 
   const getStatusColor = () => {
     if (payment.refunded) return 'text-red-400 bg-red-400/10 border-red-400/20';
-    if (payment.executed) return 'text-green-400 bg-green-400/10 border-green-400/20';
+    if (payment.immediateExecuted && payment.lockedExecuted) return 'text-green-400 bg-green-400/10 border-green-400/20';
     return 'text-blue-400 bg-blue-400/10 border-blue-400/20';
   };
 
@@ -403,43 +449,62 @@ function PaymentItem({ paymentId }: { paymentId: bigint }) {
             <div className="flex items-center gap-2 mb-1">
               <span className="font-black text-xs uppercase tracking-widest text-gray-500">ID #{paymentId.toString()}</span>
               <div className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${getStatusColor()}`}>
-                {payment.refunded ? 'Refunded' : payment.executed ? 'Executed' : 'Locked'}
+                {payment.refunded ? 'Refunded' : (payment.immediateExecuted && payment.lockedExecuted) ? 'Completed' : 'Active'}
               </div>
+              {payment.goal && (
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-white/5 text-gray-400 border border-white/10">
+                  {payment.goal}
+                </span>
+              )}
             </div>
             <h3 className="text-lg font-bold flex items-center gap-2">
-              {payment.amount} CELO 
+              {payment.totalAmount} {payment.token === '0x0000000000000000000000000000000000000000' ? 'CELO' : 'cUSD'} 
               <ArrowRight size={16} className="text-gray-600" /> 
               {payment.recipient?.slice(0,6)}...{payment.recipient?.slice(-4)}
             </h3>
-            <p className="text-xs text-gray-500 font-medium">Type: {getTypeName()}</p>
+            <p className="text-xs text-gray-500 font-medium">Split: {payment.immediateAmount} Immediate / {payment.lockedAmount} Locked</p>
           </div>
         </div>
 
         {/* Right Side: Actions & Detailed Status */}
         <div className="flex items-center gap-3 w-full md:w-auto">
-          {!payment.executed && !payment.refunded && (
+          {!payment.refunded && (
             <>
-              {payment.conditionType === 1 && (
+              {!payment.immediateExecuted && (
                 <button 
-                  onClick={() => approve.approve(address as `0x${string}`)}
+                  onClick={() => executeImmediate.execute(address as `0x${string}`)}
                   className="flex-1 md:flex-none h-11 px-5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2"
                 >
-                  Approve ({payment.approvalCount?.toString()}/{payment.requiredApprovals?.toString()})
+                  {executeImmediate.isPending ? <Loader2 size={14} className="animate-spin" /> : "Claim Immediate"}
                 </button>
               )}
-              <button 
-                onClick={() => execute.execute(address as `0x${string}`)}
-                disabled={!payment.canExecute}
-                className="flex-1 md:flex-none h-11 px-6 bg-green-500/10 hover:bg-green-500/20 border border-green-500/30 text-green-400 rounded-xl text-xs font-bold transition-all disabled:opacity-30 flex items-center justify-center gap-2"
-              >
-                {execute.isPending ? <Loader2 size={14} className="animate-spin" /> : "Execute"}
-              </button>
-              <button 
-                onClick={() => refund.refund(address as `0x${string}`)}
-                className="h-11 w-11 flex items-center justify-center bg-red-500/5 hover:bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl transition-all"
-              >
-                <History size={16} />
-              </button>
+              {!payment.lockedExecuted && (
+                <>
+                  {payment.conditionType === 1 && (
+                    <button 
+                      onClick={() => approve.approve(address as `0x${string}`)}
+                      className="flex-1 md:flex-none h-11 px-5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2"
+                    >
+                      Approve ({payment.approvalCount?.toString()}/{payment.requiredApprovals?.toString()})
+                    </button>
+                  )}
+                  <button 
+                    onClick={() => executeLocked.execute(address as `0x${string}`)}
+                    disabled={!payment.canExecute}
+                    className="flex-1 md:flex-none h-11 px-6 bg-green-500/10 hover:bg-green-500/20 border border-green-500/30 text-green-400 rounded-xl text-xs font-bold transition-all disabled:opacity-30 flex items-center justify-center gap-2"
+                  >
+                    {executeLocked.isPending ? <Loader2 size={14} className="animate-spin" /> : "Unlock Vault"}
+                  </button>
+                </>
+              )}
+              {!payment.immediateExecuted && !payment.lockedExecuted && (
+                <button 
+                  onClick={() => refund.refund(address as `0x${string}`)}
+                  className="h-11 w-11 flex items-center justify-center bg-red-500/5 hover:bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl transition-all"
+                >
+                  <History size={16} />
+                </button>
+              )}
             </>
           )}
           <a 
@@ -452,17 +517,19 @@ function PaymentItem({ paymentId }: { paymentId: bigint }) {
         </div>
       </div>
 
-      {/* Progress Bar for Recurring or Time-based */}
-      {!payment.executed && !payment.refunded && payment.executeAt && (
+      {/* Progress Bar for Locked Funds */}
+      {!payment.lockedExecuted && !payment.refunded && (
         <div className="mt-4 pt-4 border-t border-white/5">
           <div className="flex justify-between text-[10px] font-bold text-gray-600 uppercase mb-2">
-            <span>Locked Since Publication</span>
-            <span>Target: {new Date(Number(payment.executeAt) * 1000).toLocaleDateString()}</span>
+            <span>{getTypeName()} Progress</span>
+            {payment.executeAt && (
+              <span>Release: {new Date(Number(payment.executeAt) * 1000).toLocaleDateString()}</span>
+            )}
           </div>
           <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
             <motion.div 
               initial={{ width: 0 }}
-              animate={{ width: payment.canExecute ? '100%' : '60%' }}
+              animate={{ width: payment.canExecute ? '100%' : '40%' }}
               className={`h-full ${payment.canExecute ? 'bg-green-500' : 'bg-green-500/20'}`}
             />
           </div>
@@ -471,3 +538,4 @@ function PaymentItem({ paymentId }: { paymentId: bigint }) {
     </div>
   );
 }
+

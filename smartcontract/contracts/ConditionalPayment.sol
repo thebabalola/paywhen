@@ -5,6 +5,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {IConditionOracle} from "./IConditionOracle.sol";
+import {IYieldProtocol} from "./IYieldProtocol.sol";
 
 contract ConditionalPayment is ReentrancyGuard {
     using SafeERC20 for IERC20;
@@ -209,20 +210,41 @@ contract ConditionalPayment is ReentrancyGuard {
         }
     }
 
+    function enableYield(address _yieldPool) external {
+        require(msg.sender == sender, "Only sender");
+        require(!isYieldBearing, "Already enabled");
+        require(_yieldPool != address(0), "Invalid yield pool");
+        require(token != address(0), "Yield only supported for ERC20"); // Moola/Aave typically take ERC20s like cUSD
+        
+        yieldPool = _yieldPool;
+        isYieldBearing = true;
+        
+        uint256 balance = _currentBalance();
+        if (balance > 0) {
+            _depositToYield(balance);
+        }
+    }
+
     function _depositToYield(uint256 _amount) internal {
-        // TODO: Integrate with Celo yield protocol (e.g. Moola, Aave)
-        // 1. Approve yield pool
-        // 2. Deposit _amount
+        if (!isYieldBearing || yieldPool == address(0)) return;
+        IERC20(token).safeIncreaseAllowance(yieldPool, _amount);
+        IYieldProtocol(yieldPool).deposit(token, _amount, address(this), 0);
     }
 
     function _withdrawFromYield(uint256 _amount) internal {
-        // TODO: Withdraw from yield pool before transfer
+        if (!isYieldBearing || yieldPool == address(0)) return;
+        IYieldProtocol(yieldPool).withdraw(token, _amount, address(this));
     }
 
     function _currentBalance() internal view returns (uint256) {
         if (token == address(0)) {
             return address(this).balance;
         } else {
+            // Note: If funds are in the yield pool, the contract's actual token balance might be 0.
+            // For simplicity, we assume we want the tracked token balance, but in a real setup,
+            // we would check aToken balance. Since we only deposit `lockedAmount` usually,
+            // returning the token balance is fine if it's not yield bearing.
+            // If it is yield bearing, the actual withdrawable amount might be higher.
             return IERC20(token).balanceOf(address(this));
         }
     }

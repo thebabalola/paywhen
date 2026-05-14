@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
 import { parseEther, formatEther } from "viem";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -49,6 +49,10 @@ export default function Home() {
   const [requiredApprovals, setRequiredApprovals] = useState("1");
 
   const { data: userPaymentsData, isLoading: loadingPayments } = useUserPayments(address || '0x');
+  const { data: balanceData } = useBalance({
+    address,
+    token: token === "0x0000000000000000000000000000000000000000" ? undefined : (token as `0x${string}`),
+  });
   const createTimestamp = useCreateTimestampPayment();
   const createManual = useCreateManualPayment();
 
@@ -56,7 +60,8 @@ export default function Home() {
 
   const immediateAmount = useMemo(() => {
     if (!totalAmount) return "0";
-    return (parseFloat(totalAmount) * (immediatePercentage / 100)).toFixed(4);
+    const val = parseFloat(totalAmount) * (immediatePercentage / 100);
+    return Number(val.toFixed(8)).toString();
   }, [totalAmount, immediatePercentage]);
 
   const aiSuggestion = useMemo(() => {
@@ -71,8 +76,8 @@ export default function Home() {
 
   const simulatedGrowth = useMemo(() => {
     const locked = parseFloat(totalAmount || "0") - parseFloat(immediateAmount);
-    if (locked <= 0) return "0.00";
-    return (locked * 1.045).toFixed(4); // 4.5% APY
+    if (locked <= 0) return "0";
+    return Number((locked * 1.045).toFixed(8)).toString(); // 4.5% APY
   }, [totalAmount, immediateAmount]);
 
   const handleCreate = async (e: React.FormEvent) => {
@@ -222,7 +227,14 @@ export default function Home() {
                         icon={<ChevronRight size={16} className="text-gray-600" />}
                       />
                       <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 ml-1">Asset & Total Amount</label>
+                        <div className="flex justify-between items-center ml-1">
+                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Asset & Total Amount</label>
+                          {balanceData && (
+                            <span className="text-[10px] font-medium text-gray-400">
+                              Bal: {Number(balanceData.formatted).toLocaleString(undefined, {maximumFractionDigits: 6})} {balanceData.symbol}
+                            </span>
+                          )}
+                        </div>
                         <div className="flex gap-2">
                           <select 
                             value={token} 
@@ -234,6 +246,7 @@ export default function Home() {
                           </select>
                           <input 
                             type="number" 
+                            step="any"
                             placeholder="0.00" 
                             value={totalAmount} 
                             onChange={(e) => setTotalAmount(e.target.value)}
@@ -252,7 +265,7 @@ export default function Home() {
                         </div>
                         <div className="text-right">
                           <div className="text-[10px] font-black uppercase text-gray-500">Locked Amount</div>
-                          <div className="text-xl font-bold text-emerald-300">{(parseFloat(totalAmount || "0") - parseFloat(immediateAmount)).toFixed(4)}</div>
+                          <div className="text-xl font-bold text-emerald-300">{Number((parseFloat(totalAmount || "0") - parseFloat(immediateAmount)).toFixed(8)).toString()}</div>
                         </div>
                       </div>
                       <input 
@@ -264,7 +277,7 @@ export default function Home() {
                         className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-green-500"
                       />
                         <span>Recipient Gets Now: {immediateAmount}</span>
-                        <span>To Growth Vault: {(parseFloat(totalAmount || "0") - parseFloat(immediateAmount)).toFixed(4)}</span>
+                        <span>To Growth Vault: {Number((parseFloat(totalAmount || "0") - parseFloat(immediateAmount)).toFixed(8)).toString()}</span>
                       </div>
                       
                       {/* Growth Vault Visualization */}

@@ -23,10 +23,10 @@ import {
   useUserPayments, 
   useCreateTimestampPayment, 
   useCreateManualPayment, 
-  useCreateRecurringPayment, 
   useConditionalPayment, 
   useApprovePayment, 
-  useExecutePayment, 
+  useExecuteImmediate,
+  useExecuteLocked,
   useRefundPayment,
   useGetPaymentAddress
 } from "@/lib/hooks";

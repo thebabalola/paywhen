@@ -1,26 +1,32 @@
-# 📝 IntentRemit Development TODO
+# 📝 IntentRemit — Remaining TODO
 
 > [!IMPORTANT]
-> This document tracks the pending tasks and technical requirements for the IntentRemit project. All upcoming work, including smart contract deployments, frontend refinements, and testing, is logged here.
+> Items listed here are **genuinely incomplete**. Everything that was completed this session (AI Allocation Engine, Growth Vault Visualizer, Live Countdown, IYieldProtocol, ConditionOracle, Unit Tests, ABI Sync, SEO/Metadata, micro-unit support, balance reader) has been removed.
 
-## 🚀 Phase 3: Advanced Features & UX
-- [ ] **AI Allocation Suggestion Engine**: Implement a rule-based/AI suggestion component that recommends splits (Immediate vs. Locked) based on selected remittance goals.
-- [ ] **Growth Vault Visualizations**: Create a dedicated UI section in the dashboard to show "simulated growth" or interest earned on locked funds.
-- [ ] **Dynamic Progress Visualization**: Enhanced countdowns and status bars for different lock conditions (Oracle, Manual, Timestamp).
+---
 
-## 🛠 Smart Contract & Technical Foundation
-- [ ] **Mainnet/Testnet Deployment**: Deploy `PaymentFactory` to Celo Mainnet/Alfajores.
-- [ ] **Contract Address Update**: Update `frontend/lib/constants.ts` with the new deployed addresses.
-- [ ] **ABI Synchronization**: Run `npx hardhat compile` and sync final ABIs to `frontend/lib/contracts.ts` after any logic tweaks.
-- [ ] **Yield Integration Implementation**: Replace the `_depositToYield` and `_withdrawFromYield` placeholders in `ConditionalPayment.sol` with actual DeFi protocol integrations (e.g., Moola Market or Aave).
-- [ ] **Condition Oracle Implementation**: Build a concrete Oracle contract for AI-powered data triggers.
+## 🚀 Deployment (Blocked — Must Do First)
 
-## 🧪 Testing & Validation
-- [ ] **Unit Tests Expansion**: Update `smartcontract/test/` to cover the new split payment logic and ERC20/cUSD support.
-- [ ] **Frontend Integration Testing**: Verify end-to-end flows using a browser wallet (Metamask/Safe).
-- [ ] **Security Review**: Internal audit of the escrow logic, specifically the split execution and refund timeouts.
+- [ ] **Fix frontend `npm run build`** — currently crashes with a `Bus error (core dumped)` caused by corrupted SWC compiler binaries from the aborted `npm install`. Fix: `rm -rf node_modules .next && npm install` (let it finish fully).
+- [ ] **Deploy `PaymentFactory` + `ConditionOracle` to Celo Alfajores** — run `npx hardhat run scripts/deploy.ts --network alfajores` and capture deployed addresses.
+- [ ] **Update `frontend/lib/contracts.ts` with real deployed addresses** — currently the contract address fields point to placeholder/zero addresses.
 
-## 🎨 Design & Branding
-- [ ] **Asset Finalization**: Ensure all logos (`.svg`, `.png`) in `frontend/public` are the final high-res versions.
-- [ ] **Favicon Sync**: Ensure the site favicon matches the new IntentRemit branding.
-- [ ] **SEO Optimization**: Finalize meta tags and descriptions for all routes.
+---
+
+## 🛠 Smart Contract
+
+- [ ] **Yield Protocol — Live DeFi Integration**: `enableYield` is implemented with the `IYieldProtocol` interface but is only tested against a `MockYieldProtocol`. A real integration with **Moola Market** (Celo's Aave fork) requires testing with the actual Moola pool address on Alfajores to verify `deposit()` / `withdraw()` work correctly.
+- [ ] **`useCreateRecurringPayment` hook** — frontend hook exists but the corresponding factory function (`createPayment` with `RECURRING` condition type) has no end-to-end test.
+
+---
+
+## 🧪 Testing
+
+- [ ] **End-to-end browser wallet test** — manually create an intent through the UI with a connected wallet (Metamask / Safe) on Alfajores, verify the split executes and the dashboard updates.
+- [ ] **Security Review** — internal audit of escrow refund timeout, re-entrancy guards, and the `enableYield` access control flow.
+
+---
+
+## 🎨 Design
+
+- [ ] **Asset Finalization** — confirm `/public/intentremit-logo.svg` is the final high-res version before mainnet launch.

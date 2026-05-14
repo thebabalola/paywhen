@@ -15,7 +15,9 @@ import {
   ChevronRight,
   Loader2,
   ShieldCheck,
-  ExternalLink
+  ExternalLink,
+  Sparkles,
+  TrendingUp
 } from "lucide-react";
 import { 
   useUserPayments, 
@@ -56,6 +58,22 @@ export default function Home() {
     if (!totalAmount) return "0";
     return (parseFloat(totalAmount) * (immediatePercentage / 100)).toFixed(4);
   }, [totalAmount, immediatePercentage]);
+
+  const aiSuggestion = useMemo(() => {
+    switch(goal) {
+      case "School Fees": return { immediate: 10, locked: 90, desc: "AI Suggests: Lock 90% in Growth Vault for future tuition." };
+      case "Medical": return { immediate: 80, locked: 20, desc: "AI Suggests: 80% immediate availability for urgent care." };
+      case "Rent": return { immediate: 50, locked: 50, desc: "AI Suggests: Balanced split for ongoing lease." };
+      case "Business": return { immediate: 30, locked: 70, desc: "AI Suggests: 70% to Growth Vault for capital expansion." };
+      default: return null;
+    }
+  }, [goal]);
+
+  const simulatedGrowth = useMemo(() => {
+    const locked = parseFloat(totalAmount || "0") - parseFloat(immediateAmount);
+    if (locked <= 0) return "0.00";
+    return (locked * 1.045).toFixed(4); // 4.5% APY
+  }, [totalAmount, immediateAmount]);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -173,8 +191,26 @@ export default function Home() {
                           >
                             {g}
                           </button>
-                        ))}
                       </div>
+                      
+                      {aiSuggestion && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: -10 }} 
+                          animate={{ opacity: 1, y: 0 }}
+                          className="mt-3 p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-center justify-between"
+                        >
+                          <div className="flex items-center gap-2 text-indigo-400 text-xs font-bold">
+                            <Sparkles size={14} /> {aiSuggestion.desc}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setImmediatePercentage(aiSuggestion.immediate)}
+                            className="px-3 py-1 bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 text-[10px] uppercase font-black tracking-widest rounded-lg transition-all"
+                          >
+                            Apply Split
+                          </button>
+                        </motion.div>
+                      )}
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -227,9 +263,25 @@ export default function Home() {
                         onChange={(e) => setImmediatePercentage(parseInt(e.target.value))}
                         className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-green-500"
                       />
-                      <div className="flex justify-between text-[10px] font-bold text-gray-600 uppercase">
                         <span>Recipient Gets Now: {immediateAmount}</span>
                         <span>To Growth Vault: {(parseFloat(totalAmount || "0") - parseFloat(immediateAmount)).toFixed(4)}</span>
+                      </div>
+                      
+                      {/* Growth Vault Visualization */}
+                      <div className="mt-4 p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-xl flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-emerald-500/20 rounded-lg">
+                            <TrendingUp size={16} className="text-emerald-400" />
+                          </div>
+                          <div>
+                            <div className="text-[10px] font-black uppercase tracking-widest text-emerald-500/70">Yield Protocol (4.5% APY)</div>
+                            <div className="text-sm font-bold text-emerald-400">Simulated 1yr Growth</div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-xl font-black text-emerald-300">~{simulatedGrowth}</div>
+                          <div className="text-[10px] uppercase text-emerald-500/50">Projected Return</div>
+                        </div>
                       </div>
                     </div>
 
@@ -434,6 +486,47 @@ function PaymentItem({ paymentId }: { paymentId: bigint }) {
     }
   };
 
+  const [timeLeft, setTimeLeft] = useState<string>('');
+
+  useEffect(() => {
+    if (payment.conditionType !== 0 || !payment.executeAt) return;
+    
+    const interval = setInterval(() => {
+      const now = Math.floor(Date.now() / 1000);
+      const target = Number(payment.executeAt);
+      if (now >= target) {
+        setTimeLeft('Unlocked');
+        clearInterval(interval);
+      } else {
+        const diff = target - now;
+        const d = Math.floor(diff / 86400);
+        const h = Math.floor((diff % 86400) / 3600);
+        const m = Math.floor((diff % 3600) / 60);
+        const s = diff % 60;
+        setTimeLeft(`${d}d ${h}h ${m}m ${s}s`);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [payment.executeAt, payment.conditionType]);
+
+  const getProgressWidth = () => {
+    if (payment.canExecute) return '100%';
+    if (payment.conditionType === 0 && payment.executeAt) {
+      // Assuming a max lock of 30 days for visual scale
+      const now = Math.floor(Date.now() / 1000);
+      const target = Number(payment.executeAt);
+      const diff = target - now;
+      if (diff <= 0) return '100%';
+      const maxDiff = 30 * 86400; // 30 days
+      const progress = Math.max(10, 100 - (diff / maxDiff) * 100);
+      return `${Math.min(100, progress)}%`;
+    }
+    if (payment.conditionType === 1) {
+      return `${((Number(payment.approvalCount) || 0) / (Number(payment.requiredApprovals) || 1)) * 100}%`;
+    }
+    return '40%';
+  };
+
   return (
     <div className="group relative bg-white/[0.03] hover:bg-white/[0.05] backdrop-blur-md border border-white/10 rounded-3xl p-6 transition-all duration-300">
       <div className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
@@ -520,18 +613,24 @@ function PaymentItem({ paymentId }: { paymentId: bigint }) {
       {/* Progress Bar for Locked Funds */}
       {!payment.lockedExecuted && !payment.refunded && (
         <div className="mt-4 pt-4 border-t border-white/5">
-          <div className="flex justify-between text-[10px] font-bold text-gray-600 uppercase mb-2">
+          <div className="flex justify-between items-end text-[10px] font-bold text-gray-600 uppercase mb-2">
             <span>{getTypeName()} Progress</span>
-            {payment.executeAt && (
-              <span>Release: {new Date(Number(payment.executeAt) * 1000).toLocaleDateString()}</span>
-            )}
+            <div className="text-right">
+              {payment.executeAt && (
+                <div className="text-emerald-400 font-black tracking-widest">{timeLeft || 'Calculating...'}</div>
+              )}
+              <div className="text-[8px]">Target: {payment.executeAt ? new Date(Number(payment.executeAt) * 1000).toLocaleDateString() : 'N/A'}</div>
+            </div>
           </div>
-          <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+          <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden shadow-inner">
             <motion.div 
               initial={{ width: 0 }}
-              animate={{ width: payment.canExecute ? '100%' : '40%' }}
-              className={`h-full ${payment.canExecute ? 'bg-green-500' : 'bg-green-500/20'}`}
-            />
+              animate={{ width: getProgressWidth() }}
+              transition={{ duration: 1 }}
+              className={`h-full relative overflow-hidden ${payment.canExecute ? 'bg-green-500' : 'bg-emerald-500/40'}`}
+            >
+              <div className="absolute inset-0 bg-white/20 w-1/2 -skew-x-12 animate-[shimmer_2s_infinite]" />
+            </motion.div>
           </div>
         </div>
       )}

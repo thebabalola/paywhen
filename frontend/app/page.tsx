@@ -63,7 +63,13 @@ export default function Home() {
   });
 
   const balanceData = useMemo(() => {
-    if (isNative) return nativeBalance;
+    if (isNative && nativeBalance) {
+      return {
+        formatted: formatEther(nativeBalance.value),
+        symbol: nativeBalance.symbol,
+        decimals: nativeBalance.decimals
+      };
+    }
     if (tokenBalance !== undefined) {
       return {
         formatted: formatEther(tokenBalance as bigint),

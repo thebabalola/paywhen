@@ -561,7 +561,7 @@ function PaymentItem({ paymentId }: { paymentId: bigint }) {
       return `${Math.min(100, progress)}%`;
     }
     if (payment.conditionType === 1) {
-      return `${((Number(payment.approvalCount) || 0) / (Number(payment.requiredApprovals) || 1)) * 100}%`;
+      return payment.canExecute ? '100%' : '20%';
     }
     return '40%';
   };
@@ -617,7 +617,7 @@ function PaymentItem({ paymentId }: { paymentId: bigint }) {
                       onClick={() => approve.approve(address as `0x${string}`)}
                       className="flex-1 md:flex-none h-11 px-5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2"
                     >
-                      Approve ({payment.approvalCount?.toString()}/{payment.requiredApprovals?.toString()})
+                      Approve (Threshold: {payment.requiredApprovals?.toString()})
                     </button>
                   )}
                   <button 

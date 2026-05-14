@@ -127,7 +127,6 @@ export function useConditionalPayment(paymentAddress: `0x${string}` | undefined)
   const { data: refunded } = useReadContract({ address: paymentAddress, abi: ConditionalPaymentABI, functionName: 'refunded', query: { enabled } })
   const { data: executeAt } = useReadContract({ address: paymentAddress, abi: ConditionalPaymentABI, functionName: 'executeAt', query: { enabled } })
   const { data: requiredApprovals } = useReadContract({ address: paymentAddress, abi: ConditionalPaymentABI, functionName: 'requiredApprovals', query: { enabled } })
-  const { data: approvalCount } = useReadContract({ address: paymentAddress, abi: ConditionalPaymentABI, functionName: 'getApprovalCount', query: { enabled } })
   const { data: canExecute } = useReadContract({ address: paymentAddress, abi: ConditionalPaymentABI, functionName: 'checkCondition', query: { enabled } })
 
   return {
@@ -144,7 +143,6 @@ export function useConditionalPayment(paymentAddress: `0x${string}` | undefined)
     refunded: refunded as boolean | undefined,
     executeAt: executeAt as bigint | undefined,
     requiredApprovals: requiredApprovals as bigint | undefined,
-    approvalCount: approvalCount as bigint | undefined,
     canExecute: canExecute as boolean | undefined,
     isLoading: enabled && (totalAmount === undefined)
   }

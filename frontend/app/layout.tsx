@@ -30,7 +30,7 @@ export const metadata: Metadata = {
       "Send money with purpose. Split payments between immediate needs and long-term growth vaults.",
     siteName: "IntentRemit",
     images: [
-      { url: "/logo.png", width: 512, height: 512, alt: "IntentRemit Logo" },
+      { url: "/intentremit-logo.svg", width: 512, height: 512, alt: "IntentRemit Logo" },
     ],
   },
   twitter: {
@@ -38,12 +38,12 @@ export const metadata: Metadata = {
     title: "IntentRemit — Purposeful Remittance",
     description:
       "IntentRemit: Purposeful remittance with automated splits and growth vaults.",
-    images: ["/logo.png"],
+    images: ["/intentremit-logo.svg"],
   },
   icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    icon: "/intentremit-logo.svg",
+    shortcut: "/intentremit-logo.svg",
+    apple: "/intentremit-logo.svg",
   },
   robots: { index: true, follow: true },
 };

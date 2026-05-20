@@ -37,6 +37,26 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<'create' | 'status'>('create');
   const [status, setStatus] = useState<{type: 'success' | 'error', message: string} | null>(null);
 
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash;
+      if (hash === '#create') {
+        setActiveTab('create');
+        setTimeout(() => {
+          document.getElementById('main-container')?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      } else if (hash === '#dashboard') {
+        setActiveTab('status');
+        setTimeout(() => {
+          document.getElementById('main-container')?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    };
+    handleHash();
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
+
   // Form State
   const [recipient, setRecipient] = useState("");
   const [totalAmount, setTotalAmount] = useState("");
@@ -140,7 +160,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-[#050505] text-white selection:bg-green-500/30 overflow-x-hidden">
+    <main className="min-h-screen bg-gradient-to-b from-[#020503] via-[#050a06] to-[#010302] text-white selection:bg-green-500/30 overflow-x-hidden">
       {/* Animated Background Gradients */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-green-500/10 blur-[120px] rounded-full animate-pulse" />
@@ -166,7 +186,7 @@ export default function Home() {
         </motion.div>
 
         {/* Dashboard Container */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div id="main-container" className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* Navigation Sidebar */}
           <div className="lg:col-span-3 space-y-2">

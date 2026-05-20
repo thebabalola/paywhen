@@ -28,7 +28,7 @@ export default function Navbar() {
         className="max-w-7xl mx-auto flex items-center justify-between bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-2xl px-6 py-3 shadow-2xl"
       >
         <Link href="/" className="flex items-center gap-3">
-          <div className="w-10 h-10 flex items-center justify-center">
+          <div className="w-14 h-14 flex items-center justify-center">
             <img 
               src="/logo.png" 
               alt="IntentRemit Logo" 
@@ -41,9 +41,9 @@ export default function Navbar() {
         </Link>
 
         <nav className="hidden md:flex items-center gap-8 text-[11px] font-black uppercase tracking-[0.2em] text-gray-500">
-          <Link href="/" className="hover:text-green-400 transition-colors">Create</Link>
-          <Link href="/" className="hover:text-green-400 transition-colors">Dashboard</Link>
-          <Link href="/" className="hover:text-green-400 transition-colors">Protocol</Link>
+          <Link href="#create" className="hover:text-green-400 transition-colors">Create</Link>
+          <Link href="#dashboard" className="hover:text-green-400 transition-colors">Dashboard</Link>
+          <a href="https://celoscan.io/address/0xf3850044Ee8d0498Cf07C5e820dd7Dd923fe869E" target="_blank" rel="noopener noreferrer" className="hover:text-green-400 transition-colors">Protocol</a>
         </nav>
 
         <div className="flex items-center gap-4">
